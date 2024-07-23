@@ -21,7 +21,16 @@ in
       enable = true;
       tcp_bbr = enabled;
     };
+    theming = {
+      stylix = enabled;
+    };
     apps = {
+      kde = {
+        kmail = enabled;
+      };
+      pdf = {
+        okular = enabled;
+      };
       utils = {
         calculator = enabled; 
       };

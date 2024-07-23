@@ -6,5 +6,6 @@
     ./audio/default.nix
     ./kernel/default.nix
     ./networking/default.nix
+    ./theming/default.nix
   ];
 }

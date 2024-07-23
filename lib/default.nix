@@ -51,6 +51,10 @@ rec {
     };
   };
 
+  mkEnableOpt = 
+    description: 
+    { enable = lib.mkEnableOption description; };
+
   ## Create a NixOS module option, with an optional description.
   ##
   ## Usage without description:

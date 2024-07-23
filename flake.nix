@@ -15,6 +15,7 @@
       url = "github:chessai/nix-std";
     };
 
+    stylix.url = "github:danth/stylix";
     nix-colors = {
       url = "github:misterio77/nix-colors";
     };
@@ -59,7 +60,7 @@
     };
   };
   outputs =
-    { self, nixpkgs, unstable, stable, home-manager, zig-overlay, fenix, oxalica, neovim-nightly-overlay, ... }@inputs:
+    { self, nixpkgs, stylix, unstable, stable, home-manager, zig-overlay, fenix, oxalica, neovim-nightly-overlay, ... }@inputs:
     let
       channels = {
         master = import nixpkgs {
@@ -115,6 +116,7 @@
               };
             };
           })
+          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

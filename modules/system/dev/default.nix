@@ -81,6 +81,7 @@ in
       wl-clipboard
       wl-clip-persist
       git
+      zed-editor
       lazygit
       just
       graphite-cli
