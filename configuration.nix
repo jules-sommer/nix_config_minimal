@@ -15,7 +15,10 @@ in
   xeta = {
     kernel = {
       enable = true;
+      package = pkgs.linuxPackages_zen;
       v4l2loopback = true;
+      experimentalRustModuleSupport = false;
+      appimageSupport = true;
     };
     networking = {
       enable = true;
@@ -113,6 +116,9 @@ in
 
   environment.systemPackages = with pkgs; [
     neovim
+    hydroxide
+    bitwarden
+    bitwarden-cli
     home-manager
     helix
     nixVersions.git # install latest (git master) version of nix pkg manager
