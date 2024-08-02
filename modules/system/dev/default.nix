@@ -77,6 +77,25 @@ in
   };
 
   config = mkIf (cliUtilsEnabled) {
+
+    programs.git = {
+      enable = true;
+      lfs.enable = true;
+      config = {
+        init = {
+          defaultBranch = "main";
+        };
+        url = {
+          "https://github.com/" = {
+            insteadOf = [
+              "gh:"
+              "github:"
+            ];
+          };
+        };
+      };
+    };
+
     environment.systemPackages = with pkgs; [
       wl-clipboard
       wl-clip-persist

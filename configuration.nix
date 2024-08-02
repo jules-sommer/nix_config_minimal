@@ -159,7 +159,6 @@ in
     enableSSHSupport = true;
   };
 
-  services.openssh.enable = true;
   networking.firewall.enable = false;
   system.stateVersion = "24.05";
 }

@@ -18,7 +18,7 @@ in
     # This will additionally add your inputs to the system's legacy channels
     # Making legacy nix commands consistent as well, awesome!
     # environment.etc = lib.mapAttrs' (name: value: {
-    #   name = "${cfg.user.home}/.nix-defexpr/channels_root/nixos/${name}";
+    #   name = "${}/.nix-defexpr/channels_root/nixos/${name}";
     #   value.source = value.flake;
     # }) config.nix.registry;
 
@@ -29,7 +29,6 @@ in
       registry = (lib.mapAttrs (_: flake: { inherit flake; })) (
         (lib.filterAttrs (_: lib.isType "flake")) inputs
       );
-      nixPath = [ "/home/jules/.nix-defexpr/channels_root/nixos" ];
 
       settings =
         let
@@ -65,10 +64,6 @@ in
         dates = "daily";
         options = "--delete-older-than 7d";
       };
-      # flake-utils-plus
-      # generateRegistryFromInputs = true;
-      # generateNixPathFromInputs = true;
-      # linkInputs = true;
     };
 
     time.timeZone = "America/Toronto";
@@ -78,13 +73,14 @@ in
       useDefaultShell = true;
       uid = 1000;
       homeMode = "755";
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHwxJcAWuHkKy/Ar37aIoqg34CDcZu7/bh978nYkOgzj jules"
+      ];
       extraGroups = [
         "wheel"
         "users"
         "networkmanager"
-        "wheel"
         "vboxusers"
-        "docker"
         "wireshark"
         "libvirtd"
         "fuse"
