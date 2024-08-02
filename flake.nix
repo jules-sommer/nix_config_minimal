@@ -8,6 +8,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    base24-themes.url = "github:jules-sommer/nix_b24_themes";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-flake.url = "github:srid/nixos-flake";
 
@@ -45,11 +47,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixvim = {
-      url = "github:nix-community/nixvim";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     pyprland = {
       url = "github:hyprland-community/pyprland";
     };
@@ -60,7 +57,7 @@
     };
   };
   outputs =
-    { self, nixpkgs, stylix, unstable, stable, home-manager, zig-overlay, fenix, oxalica, neovim-nightly-overlay, ... }@inputs:
+    { self, nixpkgs, stylix, unstable, stable, base24-themes, home-manager, zig-overlay, fenix, oxalica, neovim-nightly-overlay, ... }@inputs:
     let
       channels = {
         master = import nixpkgs {
@@ -88,27 +85,31 @@
         ];
       };
 
+      theme = base24-themes.themes.tokyo_night_dark;
+
       nix = rec {
         pkgs = channels.master;
         lib = pkgs.lib; 
       };
 
-      lib = nix.lib // flake.lib;
+      lib = nix.lib // flake.lib // home-manager.lib;
     in
+    assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? mkOpt;
     {
-      inherit lib channels;
-      nixosConfigurations.xeta = nixpkgs.lib.nixosSystem rec {
+      inherit lib channels theme;
+      inherit (nix) pkgs;
+      nixosConfigurations.xeta = nixpkgs.lib.nixosSystem {
         inherit (flake) system;
-        specialArgs = {
-          inherit inputs system lib; 
-        };
+        specialArgs = { inherit inputs lib theme; };
         modules = [
-          ({ config, inputs, ... }: { 
+          ./configuration.nix
+          ./hardware-configuration.nix
+          stylix.nixosModules.stylix
+          home-manager.nixosModules.home-manager
+          ({ config, inputs, pkgs, ... }: {
             config = {
-              _module.args = lib.mkDefault { 
-                inherit config lib;
-                inherit (nix) pkgs;
-                inherit (self) inputs;
+              _module.args = { 
+                inherit theme channels; 
               };
               nixpkgs = {
                 config.allowUnfree = true;
@@ -116,40 +117,14 @@
               };
             };
           })
-          stylix.nixosModules.stylix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-          }
-          ./configuration.nix
-          ./hardware-configuration.nix
         ];
       };
 
       homeConfigurations = {
-        "jules@xeta" = home-manager.lib.homeManagerConfiguration {
+        "jules@xeta" = lib.homeManagerConfiguration {
           inherit (nix) pkgs;
-          extraSpecialArgs = { 
-            inherit lib;
-            inherit (nix) pkgs;
-            inherit (self) inputs;
-          };
-
+          extraSpecialArgs = { inherit inputs lib theme; };
           modules = [
-            ({ config, inputs, ... }: {
-              config = {
-                _module.args = lib.mkDefault {
-                  inherit config lib;
-                  inherit (nix) pkgs;
-                  inherit (self) inputs;
-                };
-                nixpkgs = {
-                  config.allowUnfree = true;
-                  overlays = flake.overlays;
-                };
-              };
-            })
             ./modules/home/default.nix
           ];
         };

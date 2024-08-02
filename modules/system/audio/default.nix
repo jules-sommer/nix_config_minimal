@@ -20,7 +20,6 @@ in
       helvum
     ];
 
-    sound.enable = cfg.pipewire.enable;
     # disable pulseaudio if pipewire is enabled
     hardware.pulseaudio.enable = !cfg.pipewire.enable;
     security.rtkit.enable = cfg.pipewire.enable;

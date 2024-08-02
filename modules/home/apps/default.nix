@@ -1,0 +1,7 @@
+{ ... }:
+
+{
+  imports = [
+    ./tty/default.nix
+  ];
+}

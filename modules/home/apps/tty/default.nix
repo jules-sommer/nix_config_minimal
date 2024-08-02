@@ -2,57 +2,49 @@
   lib,
   config,
   pkgs,
+  theme,
   ...
 }:
 let
-  inherit (lib) mkOpt mkIf types;
-
-  cfg = config.xeta.apps.tty;
-  theme = lib.xeta.getThemeBase24 "tokyo-night-dark";
+  inherit (lib) mkOpt mkIf types mkEnableOption;
+  cfg = config.xeta.terminal.emulator;
 in
 {
-  options.xeta.apps.tty = {
-    default = mkOpt (types.nullOr (
-      types.enum [
-        pkgs.alacritty
-        pkgs.kitty
-      ]
-    )) null "The default terminal emulator to use";
+  options.xeta.terminal.emulator = {
+    enable = mkEnableOption "Terminal emulator configuration";
+    package = mkOpt (types.nullOr types.package) null "The default terminal emulator to use";
   };
 
-  config = mkIf (cfg.default != null) {
-    assertions = [
-      {
-        assertion =
-          (cfg.default != null)
-          &&
-            (lib.elem (cfg.default) [
-              pkgs.alacritty
-              pkgs.kitty
-            ]) != null;
-        message = "You must set a default terminal emulator to use this flake, and it must be one of the following: alacritty, kitty @ config.xeta.tty.default";
-      }
-    ];
+  config = mkIf (cfg.enable) {
+    assertions = [{
+      assertion = (cfg.package != null) && (builtins.elem (cfg.package) [
+        pkgs.alacritty pkgs.kitty
+      ]);
+    }];
     programs = {
-      kitty = {
+      kitty = mkIf (cfg.package == pkgs.kitty) (lib.mkDefault {
         enable = true;
         package = pkgs.kitty;
         font = {
-         name = "JetBrains Mono Nerd Font";
+          name = "JetBrains Mono Nerd Font";
           size = 12;
         };
         settings = {
           cursor = theme.colors.base0FA;
           cursor_text_color = theme.colors.base06;
-          scrollback_lines = 10000;
+          tab_bar_edge = "top";
+          tab_bar_style = "slant";
+          tab_bar_margin_width = 1;
+          tab_bar_margin_height = "1.0 1.0"; 
+          scrollback_lines = 15000;
           copy_on_select = "yes";
-          background_opacity = "0.5";
-          background_blur = 20;
-          background = theme.colors.base01;
+          background_opacity = "0.65";
+          background_blur = 25;
+          background = theme.colors.base00;
         };
-      };
+      });
 
-      alacritty = {
+      alacritty = mkIf (cfg.package == pkgs.alacritty) {
         enable = true;
         package = pkgs.alacritty;
         settings = {

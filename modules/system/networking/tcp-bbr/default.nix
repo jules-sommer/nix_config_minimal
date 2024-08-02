@@ -1,6 +1,5 @@
 {
   lib,
-  inputs,
   config,
   pkgs,
   ...
@@ -10,12 +9,8 @@ let
   inherit (lib)
     mkEnableOption
     mkIf
-    types
-    mkMerge
-    enabled
     mkOpt
-    mkListOf
-    mkBoolOpt
+    enabled
     ;
 
   cfg = config.xeta.networking;

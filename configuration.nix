@@ -115,16 +115,21 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    nixfmt-rfc-style
+    lact 
     neovim
     hydroxide
     bitwarden
     bitwarden-cli
     home-manager
     helix
+    nixel
+    lix
     nixVersions.git # install latest (git master) version of nix pkg manager
     font-awesome
     jetbrains-mono
     qbittorrent
+    btop
     mpv
     vlc
     metasploit

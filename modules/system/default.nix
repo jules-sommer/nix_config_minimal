@@ -1,4 +1,4 @@
-{ config, lib, ... }: {
+{ ... }: {
   imports = [
     ./dev/default.nix
     ./apps/default.nix
