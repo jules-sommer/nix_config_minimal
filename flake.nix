@@ -77,6 +77,9 @@
         unstable = import unstable { inherit (flake) system; };
         stable = import stable { inherit (flake) system; };
       };
+
+      mkLib = nixpkgs: nixpkgs.lib.extend (self: super: flake.lib // home-manager.lib);
+
       flake = {
         system = "x86_64-linux";
         lib = import ./lib/default.nix {
@@ -99,7 +102,7 @@
         lib = pkgs.lib;
       };
 
-      lib = nix.lib // flake.lib // home-manager.lib;
+      lib = mkLib inputs.nixpkgs;
     in
     assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? mkOpt;
     {
