@@ -40,6 +40,16 @@ rec {
     else
       builtins.map (x: input.packages.${system}.${x}) attrNames;
 
+  mkEnabledPkg = pkg: {
+    enable = true;
+    package = pkg;
+  };
+
+  getHomeDirs = username: rec {
+    home = "/home/${username}";
+    configHome = "${home}/.config";
+  };
+
   ### Namespaced lib functions
   xeta = {
     systems = rec {
@@ -51,9 +61,7 @@ rec {
     };
   };
 
-  mkEnableOpt = 
-    description: 
-    { enable = lib.mkEnableOption description; };
+  mkEnableOpt = description: { enable = lib.mkEnableOption description; };
 
   ## Create a NixOS module option, with an optional description.
   ##
@@ -80,7 +88,6 @@ rec {
   ##
   #@ Type -> Any -> String
   mkOpt' = type: default: mkOpt type default null;
-
 
   ## Create a boolean NixOS module option.
   ##

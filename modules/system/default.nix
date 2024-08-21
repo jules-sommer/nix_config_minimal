@@ -1,4 +1,5 @@
-{ ... }: {
+{ ... }:
+{
   imports = [
     ./dev/default.nix
     ./apps/default.nix
@@ -8,5 +9,6 @@
     ./networking/default.nix
     ./theming/default.nix
     ./services/default.nix
+    ./fonts/default.nix
   ];
 }

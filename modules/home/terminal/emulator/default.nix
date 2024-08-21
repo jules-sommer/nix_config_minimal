@@ -6,7 +6,12 @@
   ...
 }:
 let
-  inherit (lib) mkOpt mkIf types mkEnableOption;
+  inherit (lib)
+    mkOpt
+    mkIf
+    types
+    mkEnableOption
+    ;
   cfg = config.xeta.terminal.emulator;
 in
 {
@@ -16,33 +21,42 @@ in
   };
 
   config = mkIf (cfg.enable) {
-    assertions = [{
-      assertion = (cfg.package != null) && (builtins.elem (cfg.package) [
-        pkgs.alacritty pkgs.kitty
-      ]);
-    }];
+    assertions = [
+      {
+        assertion =
+          (cfg.package != null)
+          && (builtins.elem (cfg.package) [
+            pkgs.alacritty
+            pkgs.kitty
+          ]);
+      }
+    ];
+
     programs = {
-      kitty = mkIf (cfg.package == pkgs.kitty) (lib.mkDefault {
-        enable = true;
-        package = pkgs.kitty;
-        font = {
-          name = "JetBrains Mono Nerd Font";
-          size = 12;
-        };
-        settings = {
-          cursor = theme.colors.base0FA;
-          cursor_text_color = theme.colors.base06;
-          tab_bar_edge = "top";
-          tab_bar_style = "slant";
-          tab_bar_margin_width = 1;
-          tab_bar_margin_height = "1.0 1.0"; 
-          scrollback_lines = 15000;
-          copy_on_select = "yes";
-          background_opacity = "0.65";
-          background_blur = 25;
-          background = theme.colors.base00;
-        };
-      });
+      kitty = mkIf (cfg.package == pkgs.kitty) (
+        lib.mkDefault {
+          enable = true;
+          package = pkgs.kitty;
+          font = {
+            name = "JetBrains Mono Nerd Font";
+            size = 12;
+          };
+          settings = {
+            cursor = theme.colors.base0FA;
+            cursor_text_color = theme.colors.base06;
+            tab_bar_edge = "top";
+            tab_bar_style = "slant";
+            tab_bar_margin_width = 1;
+            tab_bar_margin_height = "1.0 1.0";
+            transparent = true;
+            scrollback_lines = 15000;
+            copy_on_select = "yes";
+            background_opacity = "0.75";
+            background_blur = 30;
+            background = "#000000";
+          };
+        }
+      );
 
       alacritty = mkIf (cfg.package == pkgs.alacritty) {
         enable = true;

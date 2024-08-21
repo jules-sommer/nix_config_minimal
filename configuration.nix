@@ -5,12 +5,12 @@
   ...
 }:
 let
-  inherit (lib) enabled disabled;
+  inherit (lib) enabled disabled getHomeDirs;
+
+  homeDirs = getHomeDirs "jules";
 in
 {
-  imports = [
-    ./modules/system/default.nix
-  ];
+  imports = [ ./modules/system/default.nix ];
 
   xeta = {
     kernel = {
@@ -35,8 +35,12 @@ in
         okular = enabled;
       };
       utils = {
-        calculator = enabled; 
+        calculator = enabled;
       };
+    };
+    services = {
+      hydroxide = enabled;
+      ollama = enabled;
     };
     development = {
       rust = enabled;
@@ -47,10 +51,7 @@ in
       go = enabled;
 
       extras = {
-        cli = with pkgs; [
-          lazygit
-
-        ];
+        cli = with pkgs; [ lazygit ];
       };
     };
     audio = {
@@ -58,16 +59,46 @@ in
     };
   };
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  programs.nix-ld.enable = true;
+  programs.steam = {
+    enable = true;
+    gamescopeSession.enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
 
-  networking.hostName = "xeta"; 
+  boot = {
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+
+    binfmt.registrations.appimage = {
+      wrapInterpreterInShell = false;
+      interpreter = "${pkgs.appimage-run}/bin/appimage-run";
+      recognitionType = "magic";
+      offset = 0;
+      mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
+      magicOrExtension = ''\x7fELF....AI\x02'';
+    };
+  };
+
+  networking.hostName = "xeta";
 
   # networking.wireless.enable = true; 
-  networking.networkmanager.enable = true; 
+  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/Toronto";
+
+  hardware.amdgpu = {
+    opencl.enable = true;
+    initrd.enable = true;
+    amdvlk = {
+      enable = true;
+      supportExperimental = enabled;
+      support32Bit = enabled;
+      settings = { };
+    };
+  };
 
   console = {
     font = "JetBrains Mono Nerd Font";
@@ -77,46 +108,22 @@ in
 
   environment.variables = {
     LOG_ICONS = "true";
+    KITTY_CONFIG_DIRECTORY = "${homeDirs.home}/kitty";
     EDITOR = "nvim";
   };
 
-  fonts = {
-    enableDefaultPackages = true;
-    fontDir.enable = true;
-
-    packages = with pkgs; [
-      ubuntu_font_family
-      jetbrains-mono
-      fira-code
-      roboto
-      roboto-mono
-      roboto-serif
-      font-awesome
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-cjk-serif
-      noto-fonts-emoji
-      (nerdfonts.override {
-        fonts = [
-          "Hack"
-          "JetBrainsMono"
-          "FiraCode"
-        ];
-      })
-    ];
-
-    fontconfig = {
-      defaultFonts = {
-        serif = [ "Ubuntu" ];
-        sansSerif = [ "Ubuntu" ];
-        monospace = [ "JetBrains Mono" ];
-      };
-    };
-  };
-
   environment.systemPackages = with pkgs; [
+    cosmic-comp
+    cosmic-greeter
+    nur.repos.shadowrz.klassy
+    prismlauncher
+    optifine
+    jre8
+    jre_minimal
+    jre17_minimal
+    radeontop
     nixfmt-rfc-style
-    lact 
+    lact
     neovim
     hydroxide
     bitwarden
@@ -139,6 +146,15 @@ in
     (nerdfonts.override {
       fonts = [
         "JetBrainsMono"
+        "Noto"
+        "RobotoMono"
+        "ZedMono"
+        "Ubuntu"
+        "UbuntuMono"
+        "NerdFontsSymbolsOnly"
+        "SpaceMono"
+        "UbuntuSans"
+        "Hack"
         "FiraCode"
       ];
     })

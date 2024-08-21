@@ -5,13 +5,16 @@
   ...
 }:
 let
-  inherit (lib) enabled;
+  inherit (lib) enabled mkEnabledPkg getHomeDirs;
+
+  homeDirs = getHomeDirs "jules";
 in
 {
   imports = [
     ./apps/default.nix
     ./pkgs/default.nix
     ./utils/default.nix
+    ./terminal
   ];
 
   config = {
@@ -21,15 +24,60 @@ in
         message = "lib.mkOpt and lib.mkIf are not available";
       }
     ];
+
     xeta = {
-      terminal.emulator = {
+      terminal = {
         enable = true;
-        package = pkgs.kitty;
+        emulator = mkEnabledPkg pkgs.kitty;
+        prompt = mkEnabledPkg pkgs.starship;
+        shell = {
+          enable = true;
+          package = pkgs.nushell;
+          settings = {
+            zoxide = mkEnabledPkg pkgs.zoxide;
+            carapace = mkEnabledPkg pkgs.carapace;
+          };
+        };
       };
     };
 
-    home.username = "jules";
-    home.homeDirectory = "/home/jules";
-    home.stateVersion = "24.05";
+    xdg = {
+      inherit (homeDirs) configHome;
+    };
+
+    programs = {
+      ripgrep = enabled;
+      fzf = enabled;
+      carapace = enabled;
+      fd = enabled;
+      direnv = {
+        enable = true;
+        enableNushellIntegration = true;
+      };
+      gpg = enabled;
+      go = enabled;
+      gh = {
+        enable = true;
+        gitCredentialHelper = enabled;
+      };
+      fish = {
+        enable = true;
+        shellInit = ''
+          echo "Welcome to Fish!"
+        '';
+      };
+      broot = {
+        enable = true;
+        enableNushellIntegration = true;
+        enableBashIntegration = true;
+        enableFishIntegration = true;
+      };
+    };
+
+    home = {
+      username = "jules";
+      homeDirectory = homeDirs.home;
+      stateVersion = "24.05";
+    };
   };
 }

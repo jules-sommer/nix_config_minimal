@@ -10,8 +10,12 @@
 
     base24-themes.url = "github:jules-sommer/nix_b24_themes";
 
+    nur.url = "github:nix-community/NUR";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-flake.url = "github:srid/nixos-flake";
+
+    nixvim-flake.url = "git+file:///home/jules/000_dev/000_nix/nixvim_flake";
 
     nix-std = {
       url = "github:chessai/nix-std";
@@ -67,15 +71,21 @@
       home-manager,
       zig-overlay,
       fenix,
+      nur,
       oxalica,
+      nixvim-flake,
       neovim-nightly-overlay,
       ...
     }@inputs:
     let
       channels = {
-        master = import nixpkgs { inherit (flake) system; };
+        master = import nixpkgs {
+          inherit (flake) system;
+          overlays = flake.overlays;
+        };
         unstable = import unstable { inherit (flake) system; };
         stable = import stable { inherit (flake) system; };
+        nur = import nur { nurpkgs = import nixpkgs { inherit (flake) system; }; };
       };
 
       mkLib = nixpkgs: nixpkgs.lib.extend (self: super: flake.lib // home-manager.lib);
@@ -89,16 +99,19 @@
         overlays = [
           zig-overlay.overlays.default
           neovim-nightly-overlay.overlays.default
+          (final: prev: { nixvim = nixvim-flake.packages.${prev.system}.default; })
           fenix.overlays.default
           oxalica.overlays.default
+          nur.overlay
           (import ./overlays/kernel/default.nix { inherit (self) inputs channels; })
         ];
+        packages = import ./packages/default.nix { inherit (nix) pkgs; };
       };
 
       theme = base24-themes.themes.tokyo_night_dark;
 
       nix = rec {
-        pkgs = channels.master;
+        pkgs = channels.master // flake.packages;
         lib = pkgs.lib;
       };
 
@@ -108,6 +121,7 @@
     {
       inherit lib channels theme;
       inherit (nix) pkgs;
+
       nixosConfigurations.xeta = nixpkgs.lib.nixosSystem {
         inherit (flake) system;
         specialArgs = {
@@ -123,6 +137,7 @@
           ./hardware-configuration.nix
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
+
           {
             home-manager.useGlobalPkgs = false;
             home-manager.useUserPackages = false;
@@ -145,14 +160,16 @@
               theme
               channels
               ;
+            inherit (nix) pkgs;
           };
           modules = [
             ./modules/home/default.nix
             {
               home = {
-                username = "jules";
-                homeDirectory = "/home/jules";
-                packages = [ nix.pkgs.home-manager ];
+                packages = [
+                  nix.pkgs.home-manager
+                  nixvim-flake.packages.${flake.system}.default
+                ];
                 stateVersion = "24.05";
               };
             }

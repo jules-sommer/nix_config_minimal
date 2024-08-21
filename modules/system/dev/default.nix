@@ -7,7 +7,12 @@
   ...
 }:
 let
-  inherit (lib) mkOpt types mkEnableOption mkIf;
+  inherit (lib)
+    mkOpt
+    types
+    mkEnableOption
+    mkIf
+    ;
   cfg = config.xeta.development;
   anyLangEnabled = lib.any (
     lang:
@@ -17,7 +22,7 @@ let
     ] false cfg
   ) (lib.attrNames cfg);
 
-  cliUtilsEnabled = (cfg.extras.cli != null && lib.length cfg.extras.cli > 0); 
+  cliUtilsEnabled = (cfg.extras.cli != null && lib.length cfg.extras.cli > 0);
 in
 {
   imports = [
@@ -72,7 +77,9 @@ in
 
     # Non-language related extras, i.e CLI tools and system utilities.
     extras = {
-      cli = mkOpt (types.nullOr (types.listOf types.package)) null "Additional CLI tools to install for development.";   
+      cli = mkOpt (types.nullOr (
+        types.listOf types.package
+      )) null "Additional CLI tools to install for development.";
     };
   };
 
@@ -97,6 +104,17 @@ in
     };
 
     environment.systemPackages = with pkgs; [
+      # debugging
+      gdb
+      cgdb
+      gf
+      gdbgui
+      valgrind
+      rr
+      tracy
+      graphite-cli
+
+      # clipboard
       wl-clipboard
       wl-clip-persist
       git
