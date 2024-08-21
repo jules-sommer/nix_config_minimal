@@ -20,12 +20,12 @@ in
     package = mkOpt (types.nullOr types.package) null "The default terminal emulator to use";
   };
 
-  config = mkIf (cfg.enable) {
+  config = mkIf cfg.enable {
     assertions = [
       {
         assertion =
           (cfg.package != null)
-          && (builtins.elem (cfg.package) [
+          && (builtins.elem cfg.package [
             pkgs.alacritty
             pkgs.kitty
           ]);
@@ -37,43 +37,41 @@ in
       KITTY_ENABLE_WAYLAND = "1";
     };
     programs = {
-      kitty = mkIf (cfg.package == pkgs.kitty) (
-        lib.mkDefault {
-          enable = true;
-          package = pkgs.kitty;
-          font = {
-            name = "JetBrains Mono Nerd Font";
-            size = 12;
-          };
-          environment = {
-            KITTY_ENABLE_WAYLAND = "1";
-            KITTY_CONFIG_DIRECTORY = "/home/jules/.config/kitty";
-          };
-          shellIntegration = {
-            mode = "enabled";
-            enableFishIntegration = true;
-            enableZshIntegration = true;
-          };
-          settings = {
-            cursor = theme.colors.base0FA;
-            linux_display_server = "wayland";
-            cursor_text_color = theme.colors.base06;
-            tab_bar_edge = "bottom";
-            enabled_layouts = "splits";
-            tab_bar_style = "slant";
-            tab_bar_margin_width = 1;
-            tab_bar_margin_height = "1.0 1.0";
-            transparent = true;
-            scrollback_lines = 15000;
-            copy_on_select = "yes";
-            background_opacity = "0.5";
-            background_blur = 30;
-            background = "#000000";
-          };
-        }
-      );
+      kitty = lib.mkDefault {
+        enable = true;
+        package = pkgs.kitty;
+        font = {
+          name = "FiraCode";
+          size = 12;
+        };
+        environment = {
+          KITTY_ENABLE_WAYLAND = "1";
+          KITTY_CONFIG_DIRECTORY = "/home/jules/.config/kitty";
+        };
+        shellIntegration = {
+          mode = "enabled";
+          enableFishIntegration = true;
+          enableZshIntegration = true;
+        };
+        settings = {
+          cursor = theme.colors.base0FA;
+          linux_display_server = "wayland";
+          cursor_text_color = theme.colors.base06;
+          tab_bar_edge = "bottom";
+          enabled_layouts = "splits";
+          tab_bar_style = "slant";
+          tab_bar_margin_width = 1;
+          tab_bar_margin_height = "1.0 1.0";
+          transparent = true;
+          scrollback_lines = 15000;
+          copy_on_select = "yes";
+          background_opacity = "0.7";
+          background_blur = 30;
+          background = "#000000";
+        };
+      };
 
-      alacritty = mkIf (cfg.package == pkgs.alacritty) {
+      alacritty = {
         enable = true;
         package = pkgs.alacritty;
         settings = {

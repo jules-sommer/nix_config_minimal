@@ -10,9 +10,9 @@ let
 in
 {
   imports = [
-    ./apps/default.nix
-    ./pkgs/default.nix
-    ./utils/default.nix
+    ./apps
+    ./pkgs
+    ./utils
     ./desktop
     ./terminal
   ];
@@ -21,7 +21,7 @@ in
     assertions = [
       {
         assertion = lib ? mkOpt && lib ? mkIf;
-        message = "lib.mkOpt and lib.mkIf are not available";
+        message = "Could not find flake's lib functions, is the `lib` module argument being sourced from nixpkgs.lib and ./{FLAKE_ROOT}/lib and then provided to all modules via module.args sr extraSpecialArgs";
       }
     ];
 
@@ -52,6 +52,14 @@ in
     home.packages = with pkgs; [
       obsidian
       obsidian-export
+      vencord
+      vesktop
+      dorion
+      cordless
+      # ungoogled-chromium
+      chromium
+      vivaldi
+      libgen-cli
       # rustdesk
     ];
 

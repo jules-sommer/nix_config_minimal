@@ -2,6 +2,7 @@
   lib,
   pkgs,
   inputs,
+  config,
   ...
 }:
 {
@@ -12,10 +13,10 @@
   config = {
     # This will additionally add your inputs to the system's legacy channels
     # Making legacy nix commands consistent as well, awesome!
-    # environment.etc = lib.mapAttrs' (name: value: {
-    #   name = "${}/.nix-defexpr/channels_root/nixos/${name}";
-    #   value.source = value.flake;
-    # }) config.nix.registry;
+    environment.etc = lib.mapAttrs' (name: value: {
+      name = "/home/jules/.nix-defexpr/channels_root/nixos/${name}";
+      value.source = value.flake;
+    }) config.nix.registry;
 
     # Configure the Nix package manager
     nix = {

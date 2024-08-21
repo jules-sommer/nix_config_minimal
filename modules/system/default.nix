@@ -4,8 +4,7 @@
   ...
 }:
 let
-  inherit (lib) disabled enabled getHomeDirs;
-  homeDirs = getHomeDirs "jules";
+  inherit (lib) disabled enabled;
 in
 {
   imports = [
@@ -220,13 +219,6 @@ in
 
     services = {
       saned.enable = true;
-      displayManager.sddm.wayland.enable = true;
-      desktopManager.plasma6.enable = true;
-      xserver = {
-        enable = true;
-        xkb.layout = "us";
-        xkb.options = "eurosign:e,caps:escape";
-      };
       printing.enable = true;
     };
 

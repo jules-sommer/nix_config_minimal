@@ -24,30 +24,6 @@ in
       wayland-utils
     ];
 
-    services = {
-      displayManager = {
-        sddm = disabled;
-      };
-      xserver = {
-        enable = true;
-        autoRepeatDelay = 200;
-        autoRepeatInterval = 30;
-        autorun = true;
-
-        displayManager = {
-          lightdm = disabled;
-          gdm = disabled;
-        };
-
-        desktopManager = {
-          gnome = disabled;
-          xterm = disabled;
-          xfce = disabled;
-          plasma5 = disabled;
-        };
-      };
-    };
-
     programs.hyprland = {
       enable = true;
       package = inputs.hyprland.packages.${system}.default;

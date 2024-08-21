@@ -1,6 +1,5 @@
 {
   lib,
-  channels,
   pkgs,
   config,
   inputs,
@@ -15,7 +14,6 @@ let
     mkIf
     mkOption
     mkOpt
-    getPackage
     ;
 
   inherit (theme) colors;
@@ -33,11 +31,11 @@ in
     theme = mkOpt (types.nullOr types.str) "tokyo-night-dark" "Theme to use";
 
     settings = {
-      modifier = mkOpt (types.nullOr types.enum ([
+      modifier = mkOpt (types.nullOr types.enum [
         "CTRL"
         "ALT"
         "SUPER"
-      ])) "ALT" "Modifier key to use for Hyprland keybindings.";
+      ]) "ALT" "Modifier key to use for Hyprland keybindings.";
 
       keybindings = mkOption {
         type = types.listOf (
@@ -99,7 +97,7 @@ in
 
     wayland.windowManager.hyprland = {
       enable = true;
-      package = channels.stable.pkgs.hyprland;
+      package = inputs.hyprland.packages.${system}.default;
       xwayland.enable = true;
       systemd.enable = true;
       settings = {

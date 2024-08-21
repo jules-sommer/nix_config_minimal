@@ -3,6 +3,8 @@ let
   inherit (lib) types;
 in
 rec {
+
+  mkLib = { nixpkgs, rest }: nixpkgs.lib.extend (_: _: rest);
   ###
   ### getPackage input: system:
   ### Takes an input that has a 'packages' attribute and with the provided system, returns

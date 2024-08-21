@@ -36,26 +36,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zig-overlay = {
-      url = "github:mitchellh/zig-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Ziglang
+    zls.url = "github:zigtools/zls";
+    zig-overlay.url = "github:mitchellh/zig-overlay";
 
     # local flake building zig from master
-    zig-master = {
-      url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    zls-master = {
-      url = "/home/jules/000_dev/010_zig/010_repos/zls";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    zls = {
-      url = "github:zigtools/zls";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # zig-master = {
+    #   url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
+    #
+    # zls-master = {
+    #   url = "/home/jules/000_dev/010_zig/010_repos/zls";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
@@ -79,9 +73,8 @@
       stable,
       base24-themes,
       home-manager,
-      zig-master,
-      zls-master,
       fenix,
+      zig-overlay,
       nur,
       oxalica,
       nixvim-flake,
@@ -101,11 +94,14 @@
 
       mkLib = nixpkgs: nixpkgs.lib.extend (_: _: flake.lib // home-manager.lib);
 
-      flake = {
+      flake = rec {
         system = "x86_64-linux";
         lib = import ./lib/default.nix {
           inherit inputs;
           inherit (nixpkgs) lib;
+        };
+        options = {
+          compileZigFromSrc = false;
         };
         overlays = [
           # zig-overlay.overlays.default
@@ -115,10 +111,16 @@
           nur.overlay
           (_: prev: {
             nixvim = nixvim-flake.packages.${prev.system}.default;
-            zig = zig-master.packages.${prev.system}.zigPrebuilt;
-            inherit (zls-master.packages.${prev.system}) zls;
+            # locally compiled version of zig-master and zls
           })
           (import ./overlays/kernel/default.nix { inherit (self) inputs channels; })
+          (
+            _: prev:
+            nixpkgs.lib.optionalAttrs options.compileZigFromSrc {
+              inherit (inputs.zig-master.packages.${prev.system}) zig;
+              inherit (inputs.zls-master.packages.${prev.system}) zls;
+            }
+          )
         ];
         packages = import ./packages/default.nix { inherit (nix) pkgs; };
       };
@@ -130,6 +132,7 @@
         inherit (pkgs) lib;
       };
 
+      otherLib = flake.lib.mkLib (flake.lib // home-manager.lib);
       lib = mkLib inputs.nixpkgs;
     in
     assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? mkOpt;
@@ -151,7 +154,8 @@
         modules = [
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
-          ./modules/system/default.nix
+          ## Primary system module @ ./modules/system/default.nix
+          ./modules/system
           {
             home-manager.useGlobalPkgs = false;
             home-manager.useUserPackages = false;
@@ -176,7 +180,8 @@
             inherit (nix) pkgs;
           };
           modules = [
-            ./modules/home/default.nix
+            ## Primary home-manager module @ ./modules/home/default.nix
+            ./modules/home
             {
               nixpkgs = {
                 config.allowUnfree = true;
@@ -185,7 +190,7 @@
                 packages = [
                   nix.pkgs.home-manager
                   nixvim-flake.packages.${flake.system}.default
-                  zig-master.packages.${flake.system}.zigPrebuilt
+                  zig-overlay.packages.${flake.system}.master
                 ];
                 stateVersion = "24.05";
               };
