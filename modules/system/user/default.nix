@@ -1,18 +1,13 @@
 {
   lib,
   pkgs,
-  config,
   inputs,
-  system,
   ...
 }:
-let
-  inherit (lib) mkOpt types mkEnableOption mkIf;
-  cfg = config.xeta.system;
-in
 {
-  options.xeta.system = {
-  };
+  options.xeta.system =
+    {
+    };
 
   config = {
     # This will additionally add your inputs to the system's legacy channels
@@ -88,10 +83,7 @@ in
       packages = with pkgs; [
         floorp
         vencord
-        starship
         webcord
-        git
-        tree
       ];
     };
   };

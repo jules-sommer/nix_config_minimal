@@ -11,45 +11,49 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [
-    "nvme"
-    "xhci_pci"
-    "ahci"
-    "usbhid"
-    "uas"
-    "sd_mod"
-  ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
-
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/fdbae80e-5cd5-4956-83fb-9da18afe4c28";
-    fsType = "ext4";
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/AA35-CFAA";
-    fsType = "vfat";
-    options = [
-      "fmask=0022"
-      "dmask=0022"
+  boot = {
+    initrd.availableKernelModules = [
+      "nvme"
+      "xhci_pci"
+      "ahci"
+      "usbhid"
+      "uas"
+      "sd_mod"
     ];
+    initrd.kernelModules = [ ];
+    kernelModules = [ "kvm-amd" ];
+    extraModulePackages = [ ];
   };
 
-  fileSystems."/mnt/BACKUPS" = {
-    device = "/dev/disk/by-uuid/2338a52e-2388-4ae1-b4f7-116ee984b96e";
-    fsType = "ext4";
-  };
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-uuid/fdbae80e-5cd5-4956-83fb-9da18afe4c28";
+      fsType = "ext4";
+    };
 
-  fileSystems."/mnt/010_wdc_1000G" = {
-    device = "/dev/disk/by-uuid/82466B90466B83AF";
-    fsType = "ntfs";
-  };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/AA35-CFAA";
+      fsType = "vfat";
+      options = [
+        "fmask=0022"
+        "dmask=0022"
+      ];
+    };
 
-  fileSystems."/mnt/000_kingston_500G" = {
-    device = "/dev/disk/by-uuid/08BE7A82BE7A6858";
-    fsType = "ntfs";
+    "/mnt/BACKUPS" = {
+      device = "/dev/disk/by-uuid/2338a52e-2388-4ae1-b4f7-116ee984b96e";
+      fsType = "ext4";
+    };
+
+    "/mnt/010_wdc_1000G" = {
+      device = "/dev/disk/by-uuid/82466B90466B83AF";
+      fsType = "ntfs";
+    };
+
+    "/mnt/000_kingston_500G" = {
+      device = "/dev/disk/by-uuid/08BE7A82BE7A6858";
+      fsType = "ntfs";
+    };
   };
 
   swapDevices = [ { device = "/dev/disk/by-uuid/3de49731-40bd-4fbd-90d5-959683f18c72"; } ];

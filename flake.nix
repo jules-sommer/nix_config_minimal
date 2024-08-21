@@ -66,9 +66,8 @@
       url = "github:hyprland-community/pyprland";
     };
 
-    hyprland = {
-      url = "github:hyprwm/Hyprland";
-      inputs.nixpkgs.follows = "nixpkgs";
+    river = {
+      url = "/home/jules/000_dev/010_zig/010_repos/river";
     };
   };
   outputs =
@@ -80,7 +79,6 @@
       stable,
       base24-themes,
       home-manager,
-      zig-overlay,
       zig-master,
       zls-master,
       fenix,
@@ -93,8 +91,7 @@
     let
       channels = {
         master = import nixpkgs {
-          inherit (flake) system;
-          overlays = flake.overlays;
+          inherit (flake) system overlays;
           config.allowUnfree = true;
         };
         unstable = import unstable { inherit (flake) system; };
@@ -102,7 +99,7 @@
         nur = import nur { nurpkgs = import nixpkgs { inherit (flake) system; }; };
       };
 
-      mkLib = nixpkgs: nixpkgs.lib.extend (self: super: flake.lib // home-manager.lib);
+      mkLib = nixpkgs: nixpkgs.lib.extend (_: _: flake.lib // home-manager.lib);
 
       flake = {
         system = "x86_64-linux";
@@ -116,10 +113,10 @@
           fenix.overlays.default
           oxalica.overlays.default
           nur.overlay
-          (final: prev: {
+          (_: prev: {
             nixvim = nixvim-flake.packages.${prev.system}.default;
             zig = zig-master.packages.${prev.system}.zigPrebuilt;
-            zls = zls-master.packages.${prev.system}.zls;
+            inherit (zls-master.packages.${prev.system}) zls;
           })
           (import ./overlays/kernel/default.nix { inherit (self) inputs channels; })
         ];
@@ -130,7 +127,7 @@
 
       nix = rec {
         pkgs = channels.master // flake.packages;
-        lib = pkgs.lib;
+        inherit (pkgs) lib;
       };
 
       lib = mkLib inputs.nixpkgs;
@@ -152,16 +149,14 @@
           inherit (flake) system;
         };
         modules = [
-          ./configuration.nix
-          ./hardware-configuration.nix
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
-
+          ./modules/system/default.nix
           {
             home-manager.useGlobalPkgs = false;
             home-manager.useUserPackages = false;
             nixpkgs = {
-              overlays = flake.overlays;
+              inherit (flake) overlays;
             };
           }
         ];

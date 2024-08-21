@@ -28,19 +28,19 @@ in
     xeta = {
       terminal = {
         enable = true;
-        emulator = mkPackage true pkgs.kitty;
-        prompt = mkPackage true pkgs.starship;
+        emulator = mkEnabledPkg pkgs.kitty;
+        prompt = mkEnabledPkg pkgs.starship;
         shell = {
           enable = true;
           package = pkgs.nushell;
           settings = {
-            zoxide = mkPackage true pkgs.zoxide;
-            carapace = mkPackage true pkgs.carapace;
+            zoxide = mkEnabledPkg pkgs.zoxide;
+            carapace = mkEnabledPkg pkgs.carapace;
           };
         };
       };
       desktop = {
-        hyprland = enabled;
+        hyprland = disabled;
         plasma6 = enabled;
       };
     };
@@ -50,7 +50,9 @@ in
     };
 
     home.packages = with pkgs; [
-      rustdesk
+      obsidian
+      obsidian-export
+      # rustdesk
     ];
 
     programs = {
@@ -70,9 +72,7 @@ in
       };
       fish = {
         enable = true;
-        shellInit = ''
-          echo "Welcome to Fish!"
-        '';
+        shellInit = '''';
       };
       broot = {
         enable = true;

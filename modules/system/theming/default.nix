@@ -2,14 +2,10 @@
   lib,
   pkgs,
   config,
-  inputs,
-  system,
   ...
 }:
 let
   inherit (lib)
-    mkOpt
-    types
     mkEnableOption
     mkIf
     ;
@@ -24,11 +20,32 @@ in
 
   config = mkIf cfg.stylix.enable {
     stylix = {
-      enable = cfg.stylix.enable;
-      image = ./assets/zoe-love-4k.png;
+      inherit (cfg.stylix) enable;
+      image = ./assets/city-night-neon-pink.png;
       polarity = "dark";
       cursor.size = 24;
-      opacity.terminal = 0.8;
+      homeManagerIntegration = {
+        autoImport = true;
+        followSystem = true;
+      };
+      override = {
+        base00 = "000000";
+      };
+      targets = {
+        nixvim = {
+          enable = true;
+          transparentBackground = {
+            main = true;
+            signColumn = true;
+          };
+        };
+      };
+      opacity = {
+        terminal = 0.75;
+        popups = 0.75;
+        applications = 0.9;
+        desktop = 0.9;
+      };
       fonts = {
         monospace = {
           package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
@@ -49,24 +66,6 @@ in
           popups = 12;
         };
       };
-      # fonts = {
-      #   serif = {
-      #     package = pkgs.dejavu_fonts;
-      #     name = "DejaVu Serif";
-      #   };
-      #   sansSerif = {
-      #     package = pkgs.dejavu_fonts;
-      #     name = "DejaVu Sans";
-      #   };
-      #   monospace = {
-      #     package = pkgs.jetbrains-mono;
-      #     name = "Jetbrains Mono";
-      #   };
-      #   emoji = {
-      #     package = pkgs.noto-fonts-emoji;
-      #     name = "Noto Color Emoji";
-      #   };
-      # };
     };
   };
 }

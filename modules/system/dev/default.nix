@@ -7,15 +7,9 @@
 with lib;
 let
   cfg = config.xeta.development;
-  anyLangEnabled = lib.any (
-    lang:
-    lib.attrByPath [
-      lang
-      "enable"
-    ] false cfg
-  ) (lib.attrNames cfg);
 
-  cliUtilsEnabled = (cfg.extras.cli != null && lib.length cfg.extras.cli > 0);
+  anyLangEnabled = (lib.any lib.isEnabled (lib.attrNames cfg));
+  cliUtilsEnabled = cfg.extras.cli != null && lib.length cfg.extras.cli > 0;
 in
 {
   imports = [
@@ -84,111 +78,132 @@ in
     };
   };
 
-  config =
-    mkIf cliUtilsEnabled
-    || anyLangEnabled {
-      programs.git = {
-        enable = true;
-        lfs.enable = true;
-        config = {
-          init = {
-            defaultBranch = "main";
-          };
-          url = {
-            "https://github.com/" = {
-              insteadOf = [
-                "gh:"
-                "github:"
-              ];
-            };
+  config = mkIf cliUtilsEnabled {
+    programs.git = {
+      enable = true;
+      lfs.enable = true;
+      config = {
+        init = {
+          defaultBranch = "main";
+        };
+        url = {
+          "https://github.com/" = {
+            insteadOf = [
+              "gh:"
+              "github:"
+            ];
           };
         };
       };
+    };
 
-      # TODO: organize this stuff better
-      environment.systemPackages = with pkgs; [
-        # docs and man pages
-        manix
-        man
-        man-pages
-        man-pages-posix
-
-        # filesystem
-        joshuto
-
-        # debugging
-        gdb
-        cgdb
-        gf
-        gdbgui
-        valgrind
-        rr
-        tracy
-        graphite-cli
-
-        # clipboard
-        wl-clipboard
-        wl-clip-persist
-        git
-        zed-editor
-        flyctl
-        colort
-        colorz
-        colorstorm
-        okolors
-        epick
-        wl-color-picker
-        colord-gtk4
-        emulsion-palette
-        lazygit
-        just
-        graphite-cli
-        gh
-        fastfetch
-        blahaj
-        nixd
-        nurl
-        p7zip
-        gitoxide
-        ripgrep
-        scriptisto
-        fd
-        dig
-        bat
-        jq
-        helix
-        deploy-rs
-        nixfmt-rfc-style
-        nix-index
-        nix-prefetch-git
-        nix-output-monitor
-        flake-checker
-        starship
-        zoxide
-        broot
-        nushell
-        busybox
-        jujutsu
-        nil
-        pzip
-        unzip
-        unzrip
-        peazip
-        ripunzip
-        ripgrep-all
-        lrzip
-        lbzip2
-        lzip
-        clzip
-        bzip2
-        bzip3
-        pbzip2
-        plzip
-        zip
-        gzip
-        jql
-        jq-lsp
-        apx
+    services.mysql = {
+      enable = true;
+      package = pkgs.mariadb_110;
+      ensureUsers = [
+        {
+          name = "jules";
+          ensurePermissions = {
+            "scimag.*" = "ALL PRIVILEGES";
+          };
+        }
+      ];
+      ensureDatabases = [
+        "nextcloud"
+        "matomo"
+      ];
+      initialDatabases = [
+        {
+          name = "scimag";
+          schema = "/home/jules/015_articles-&-research/020_dois/scimag_2020-05-30.sql";
+        }
       ];
     };
+
+    # TODO: organize this stuff better
+    environment.systemPackages = with pkgs; [
+      # docs and man pages
+      manix
+      man
+      man-pages
+      man-pages-posix
+
+      # filesystem
+      joshuto
+
+      # debugging
+      gdb
+      cgdb
+      gf
+      gdbgui
+      valgrind
+      rr
+      tracy
+      graphite-cli
+
+      # clipboard
+      wl-clipboard
+      wl-clip-persist
+      git
+      zed-editor
+      flyctl
+      colort
+      colorz
+      colorstorm
+      okolors
+      epick
+      wl-color-picker
+      colord-gtk4
+      emulsion-palette
+      lazygit
+      just
+      graphite-cli
+      gh
+      fastfetch
+      blahaj
+      nixd
+      nurl
+      p7zip
+      gitoxide
+      ripgrep
+      scriptisto
+      fd
+      dig
+      bat
+      jq
+      helix
+      deploy-rs
+      nixfmt-rfc-style
+      nix-index
+      nix-prefetch-git
+      nix-output-monitor
+      flake-checker
+      starship
+      zoxide
+      broot
+      nushell
+      busybox
+      jujutsu
+      nil
+      pzip
+      unzip
+      unzrip
+      peazip
+      ripunzip
+      ripgrep-all
+      lrzip
+      lbzip2
+      lzip
+      clzip
+      bzip2
+      bzip3
+      pbzip2
+      plzip
+      zip
+      gzip
+      jql
+      jq-lsp
+      apx
+    ];
+  };
 }

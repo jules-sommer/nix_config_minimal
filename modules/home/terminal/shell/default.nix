@@ -36,10 +36,10 @@ in
     };
   };
 
-  config = mkIf (cfg.enable) {
+  config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = (cfg.package != null) && (builtins.elem (cfg.package) [ pkgs.nushell ]);
+        assertion = (cfg.package != null) && (builtins.elem cfg.package [ pkgs.nushell ]);
         message = "Invalid shell package";
       }
     ];
@@ -48,14 +48,14 @@ in
 
     programs = {
       zoxide =
-        mkIf (cfg.settings.zoxide.enable) {
+        mkIf cfg.settings.zoxide.enable {
           enable = true;
           package = cfg.settings.zoxide.package or pkgs.zoxide;
         }
         // enableIntegrations;
 
       carapace =
-        mkIf (cfg.settings.carapace.enable) {
+        mkIf cfg.settings.carapace.enable {
           enable = true;
           package = cfg.settings.carapace.package or pkgs.carapace;
         }
@@ -63,10 +63,8 @@ in
 
       nushell = mkIf (cfg.package == pkgs.nushell) {
         enable = true;
-        package = cfg.package;
-
-        extraEnv = (builtins.readFile ./profiles/nushell/zoxide.nu);
-
+        inherit (cfg) package;
+        extraEnv = builtins.readFile ./profiles/nushell/zoxide.nu;
         shellAliases = {
           ll = "ls -la";
           ff = "fastfetch";
@@ -85,6 +83,32 @@ in
         configFile.source = ./profiles/nushell/config.nu;
         envFile.source = ./profiles/nushell/env.nu;
         loginFile.source = ./profiles/nushell/login.nu;
+      };
+      fish = {
+        enable = true;
+        functions.fish_greeting.body = "";
+        plugins = with pkgs.fishPlugins; [
+          {
+            name = "z";
+            src = z;
+          }
+          {
+            name = "fifc";
+            src = fifc;
+          }
+          {
+            name = "fzf";
+            src = fzf;
+          }
+          {
+            name = "forgit";
+            src = forgit;
+          }
+          {
+            name = "autopair";
+            src = autopair;
+          }
+        ];
       };
     };
   };

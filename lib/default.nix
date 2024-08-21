@@ -24,14 +24,13 @@ rec {
     assert lib.assertMsg (builtins.isAttrs input) "getPackage: input is not an attribute set";
     assert lib.assertMsg (builtins.hasAttr "packages" input)
       "getPackage: input does not have a 'packages' attribute";
-    assert lib.assertMsg (builtins.hasAttr system (
-      input.packages
-    )) "getPackage: input does not have a 'packages.${system}' attribute";
+    assert lib.assertMsg (builtins.hasAttr system input.packages)
+      "getPackage: input does not have a 'packages.${system}' attribute";
     assert lib.assertMsg ((builtins.attrNames input.packages.${system}) != [ ])
       "getPackage: input.packages.${system} is empty, this flake input probably doesn't output any packages for the provided system of '${system}'.";
     if (name != null) then
       assert lib.assertMsg (
-        builtins.typeOf (name) == "string" && name != ""
+        builtins.typeOf name == "string" && name != ""
       ) "getPackage: name is null or not of type string";
       assert lib.assertMsg (builtins.hasAttr name (
         input.packages.${system}
@@ -183,6 +182,22 @@ rec {
   ##
   #@ List String -> String
   joinStrings = strings: builtins.concatStringsSep " " strings;
+
+  ## Checks if an option is enabled.
+  ##
+  ## ```nix
+  ## lib.isEnabled "services.nginx"
+  ## ```
+  ## The example expression above evaluates to true, if the option 
+  ## is enabled, false otherwise.
+  ##
+  #@ Attrs -> Bool
+  isEnabled =
+    option:
+    (lib.attrByPath [
+      "enable"
+    ] option)
+      false;
 
   enabled = {
     ## Quickly enable an option.

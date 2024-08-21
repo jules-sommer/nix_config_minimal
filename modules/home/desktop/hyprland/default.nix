@@ -1,5 +1,6 @@
 {
   lib,
+  channels,
   pkgs,
   config,
   inputs,
@@ -98,7 +99,7 @@ in
 
     wayland.windowManager.hyprland = {
       enable = true;
-      # package = inputs.hyprland.packages.${system}.default;
+      package = channels.stable.pkgs.hyprland;
       xwayland.enable = true;
       systemd.enable = true;
       settings = {
