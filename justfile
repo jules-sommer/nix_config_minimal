@@ -48,7 +48,7 @@ extern-build scope="system" action="switch" out="xeta":
   }
 
   if $scope in ["home" "all"] {
-    if $action in ["switch" "build" "test" ] {
+    if $action in ["switch" "build" ] {
       let result = try {
         run-external "home-manager" ($action) "--flake" $".#($out)" | complete
       } catch { |error|

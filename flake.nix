@@ -15,7 +15,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixos-flake.url = "github:srid/nixos-flake";
 
-    nixvim-flake.url = "git+file:///home/jules/000_dev/000_nix/nixvim_flake";
+    nixvim-flake.url = "/home/jules/000_dev/000_nix/nixvim_flake";
 
     nix-std = {
       url = "github:chessai/nix-std";
@@ -38,6 +38,17 @@
 
     zig-overlay = {
       url = "github:mitchellh/zig-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # local flake building zig from master
+    zig-master = {
+      url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    zls-master = {
+      url = "/home/jules/000_dev/010_zig/010_repos/zls";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -70,6 +81,8 @@
       base24-themes,
       home-manager,
       zig-overlay,
+      zig-master,
+      zls-master,
       fenix,
       nur,
       oxalica,
@@ -82,6 +95,7 @@
         master = import nixpkgs {
           inherit (flake) system;
           overlays = flake.overlays;
+          config.allowUnfree = true;
         };
         unstable = import unstable { inherit (flake) system; };
         stable = import stable { inherit (flake) system; };
@@ -97,12 +111,16 @@
           inherit (nixpkgs) lib;
         };
         overlays = [
-          zig-overlay.overlays.default
+          # zig-overlay.overlays.default
           neovim-nightly-overlay.overlays.default
-          (final: prev: { nixvim = nixvim-flake.packages.${prev.system}.default; })
           fenix.overlays.default
           oxalica.overlays.default
           nur.overlay
+          (final: prev: {
+            nixvim = nixvim-flake.packages.${prev.system}.default;
+            zig = zig-master.packages.${prev.system}.zigPrebuilt;
+            zls = zls-master.packages.${prev.system}.zls;
+          })
           (import ./overlays/kernel/default.nix { inherit (self) inputs channels; })
         ];
         packages = import ./packages/default.nix { inherit (nix) pkgs; };
@@ -131,6 +149,7 @@
             theme
             channels
             ;
+          inherit (flake) system;
         };
         modules = [
           ./configuration.nix
@@ -141,9 +160,7 @@
           {
             home-manager.useGlobalPkgs = false;
             home-manager.useUserPackages = false;
-
             nixpkgs = {
-              config.allowUnfree = true;
               overlays = flake.overlays;
             };
           }
@@ -160,15 +177,20 @@
               theme
               channels
               ;
+            inherit (flake) system;
             inherit (nix) pkgs;
           };
           modules = [
             ./modules/home/default.nix
             {
+              nixpkgs = {
+                config.allowUnfree = true;
+              };
               home = {
                 packages = [
                   nix.pkgs.home-manager
                   nixvim-flake.packages.${flake.system}.default
+                  zig-master.packages.${flake.system}.zigPrebuilt
                 ];
                 stateVersion = "24.05";
               };

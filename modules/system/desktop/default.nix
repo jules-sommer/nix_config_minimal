@@ -1,11 +1,7 @@
+{ ... }:
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-let
-in
-{
-
+  imports = [
+    ./hyprland
+    ./plasma6
+  ];
 }

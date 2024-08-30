@@ -6,15 +6,14 @@
 }:
 with lib;
 let
-  cfg = config.xeta.development.python;
+  cfg = config.xeta.development.odin;
 in
 {
+
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      pipx
-      pip
-      pipenv
-      python313Full
+      odin
+      ols
     ];
   };
 }

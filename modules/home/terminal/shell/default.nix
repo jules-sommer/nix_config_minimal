@@ -71,16 +71,15 @@ in
           ll = "ls -la";
           ff = "fastfetch";
           br = "broot -hips";
-          hx_conf = "hx $nu.config-path";
-          hx_env = "hx $nu.env-path";
-          copy = "wl-copy";
-          paste = "wl-paste";
+          yank = "wl-copy";
+          put = "wl-paste";
           sync = "rsync -avh --progress";
           mirror_sync = "rsync -avzHAX --delete --numeric-ids --info=progress2";
           cp = "rsync";
           cd = "z";
           ci = "zi";
           tree = "dutree";
+          clone = "gix clone";
         };
 
         configFile.source = ./profiles/nushell/config.nu;

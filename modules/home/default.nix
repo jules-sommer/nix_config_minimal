@@ -4,9 +4,8 @@
   lib,
   ...
 }:
+with lib;
 let
-  inherit (lib) enabled mkEnabledPkg getHomeDirs;
-
   homeDirs = getHomeDirs "jules";
 in
 {
@@ -14,6 +13,7 @@ in
     ./apps/default.nix
     ./pkgs/default.nix
     ./utils/default.nix
+    ./desktop
     ./terminal
   ];
 
@@ -28,22 +28,30 @@ in
     xeta = {
       terminal = {
         enable = true;
-        emulator = mkEnabledPkg pkgs.kitty;
-        prompt = mkEnabledPkg pkgs.starship;
+        emulator = mkPackage true pkgs.kitty;
+        prompt = mkPackage true pkgs.starship;
         shell = {
           enable = true;
           package = pkgs.nushell;
           settings = {
-            zoxide = mkEnabledPkg pkgs.zoxide;
-            carapace = mkEnabledPkg pkgs.carapace;
+            zoxide = mkPackage true pkgs.zoxide;
+            carapace = mkPackage true pkgs.carapace;
           };
         };
+      };
+      desktop = {
+        hyprland = enabled;
+        plasma6 = enabled;
       };
     };
 
     xdg = {
       inherit (homeDirs) configHome;
     };
+
+    home.packages = with pkgs; [
+      rustdesk
+    ];
 
     programs = {
       ripgrep = enabled;

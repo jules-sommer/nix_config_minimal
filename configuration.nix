@@ -1,17 +1,15 @@
 {
-  config,
   lib,
   pkgs,
   ...
 }:
 let
-  inherit (lib) enabled disabled getHomeDirs;
-
+  inherit (lib) enabled getHomeDirs;
   homeDirs = getHomeDirs "jules";
 in
 {
   imports = [ ./modules/system/default.nix ];
-
+  nixpkgs.config.allowUnfree = true;
   xeta = {
     kernel = {
       enable = true;
@@ -41,6 +39,11 @@ in
     services = {
       hydroxide = enabled;
       ollama = enabled;
+      rustdesk = enabled;
+    };
+    desktop = {
+      hyprland = enabled;
+      plasma6 = enabled;
     };
     development = {
       rust = enabled;
@@ -49,6 +52,9 @@ in
       nix = enabled;
       ocaml = enabled;
       go = enabled;
+      clang = enabled;
+      python = enabled;
+      odin = enabled;
 
       extras = {
         cli = with pkgs; [ lazygit ];
@@ -118,6 +124,10 @@ in
     nur.repos.shadowrz.klassy
     prismlauncher
     optifine
+    gimp-with-plugins
+    drawing
+    drawpile
+    drawio
     jre8
     jre_minimal
     jre17_minimal

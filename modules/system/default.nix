@@ -10,5 +10,6 @@
     ./theming/default.nix
     ./services/default.nix
     ./fonts/default.nix
+    ./desktop/default.nix
   ];
 }
