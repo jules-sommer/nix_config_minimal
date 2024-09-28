@@ -3,18 +3,26 @@
   imports = [
     ./hyprland
     ./plasma6
+    ./river
   ];
 
   config = {
     # enable xserver for any desktop env that needs it
-    services.xserver = {
+    qt = {
       enable = true;
-      autoRepeatDelay = 200;
-      autoRepeatInterval = 30;
-      autorun = true;
-      xkb = {
-        layout = "us";
-        options = "eurosign:e,caps:escape";
+      style = "breeze";
+      platformTheme = "kde";
+    };
+    services = {
+      xserver = {
+        enable = true;
+        autoRepeatDelay = 200;
+        autoRepeatInterval = 30;
+        autorun = true;
+        xkb = {
+          layout = "us";
+          options = "eurosign:e,caps:escape";
+        };
       };
     };
   };

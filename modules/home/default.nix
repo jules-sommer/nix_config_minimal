@@ -40,8 +40,9 @@ in
         };
       };
       desktop = {
-        hyprland = disabled;
+        hyprland = enabled;
         plasma6 = enabled;
+        river = disabled;
       };
     };
 
@@ -58,8 +59,22 @@ in
       cordless
       # ungoogled-chromium
       chromium
-      vivaldi
       libgen-cli
+      (nerdfonts.override {
+        fonts = [
+          "JetBrainsMono"
+          "Noto"
+          "RobotoMono"
+          "ZedMono"
+          "Ubuntu"
+          "UbuntuMono"
+          "NerdFontsSymbolsOnly"
+          "SpaceMono"
+          "UbuntuSans"
+          "Hack"
+          "FiraCode"
+        ];
+      })
       # rustdesk
     ];
 

@@ -185,7 +185,6 @@ in
       busybox
       jujutsu
       nil
-      pzip
       unzip
       unzrip
       peazip

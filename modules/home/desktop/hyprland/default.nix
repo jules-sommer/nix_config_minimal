@@ -28,6 +28,7 @@ in
 {
   options.xeta.desktop.hyprland = {
     enable = mkEnableOption "Enable Hyprland (@/home-manager)";
+    package = mkOpt types.package pkgs.hyprland "Package to use for hyprland home-manager config.";
     theme = mkOpt (types.nullOr types.str) "tokyo-night-dark" "Theme to use";
 
     settings = {
@@ -97,13 +98,15 @@ in
 
     wayland.windowManager.hyprland = {
       enable = true;
-      package = inputs.hyprland.packages.${system}.default;
       xwayland.enable = true;
       systemd.enable = true;
+
+      inherit (cfg) package;
+
       settings = {
         "$mod" = "SUPER";
         "$terminal" = "${terminal}";
-        "$multiplexer" = "${terminal} -e zellij";
+        "$multiplexer" = "${terminal} -e tmux";
         "$files" = "${terminal} -e joshuto";
         "$screenshot" = "${screenshot}";
         "$menu" = "wofi -show drun";
@@ -118,28 +121,27 @@ in
           ",highres,auto,1"
         ];
         env = [
-          "NIXOS_OZONE_WL, 1"
           "NIXPKGS_ALLOW_UNFREE, 1"
 
           # Theming related
-          "QT_QPA_PLATFORM,wayland;xcb"
-          "QT_WAYLAND_DISABLE_WINDOWDECORATION, 1"
-          "QT_AUTO_SCREEN_SCALE_FACTOR, 1"
-          "QT_QPA_PLATFORMTHEME,qt5ct"
-          "XCURSOR_SIZE,24"
-          "XCURSOR_THEME, Bibata-Modern-Ice"
-          "GRIM_DEFAULT_DIR,~/060_media/000_pictures/000_screenshots"
-
-          "MOZ_ENABLE_WAYLAND, 1"
-
-          "GDK_BACKEND=wayland,x11"
-          "CLUTTER_BACKEND, wayland"
-          "SDL_VIDEODRIVER, wayland"
-          "LIBVA_DRIVER_NAME,radeonsi"
-          "XDG_SESSION_TYPE,wayland"
-          "XDG_CURRENT_DESKTOP, Hyprland"
-          "XDG_SESSION_DESKTOP, Hyprland"
-          "WLR_NO_HARDWARE_CURSORS,1"
+          # "QT_QPA_PLATFORM,wayland;xcb"
+          # "QT_WAYLAND_DISABLE_WINDOWDECORATION, 1"
+          # "QT_AUTO_SCREEN_SCALE_FACTOR, 1"
+          # "QT_QPA_PLATFORMTHEME,qt5ct"
+          # "XCURSOR_SIZE,24"
+          # "XCURSOR_THEME, Bibata-Modern-Ice"
+          # "GRIM_DEFAULT_DIR,~/060_media/000_pictures/000_screenshots"
+          #
+          # "MOZ_ENABLE_WAYLAND, 1"
+          #
+          # "GDK_BACKEND=wayland,x11"
+          # "CLUTTER_BACKEND, wayland"
+          # "SDL_VIDEODRIVER, wayland"
+          # "LIBVA_DRIVER_NAME,radeonsi"
+          # "XDG_SESSION_TYPE,wayland"
+          # "XDG_CURRENT_DESKTOP, Hyprland"
+          # "XDG_SESSION_DESKTOP, Hyprland"
+          # "WLR_NO_HARDWARE_CURSORS,1"
         ];
 
         # █░█░█ █ █▄░█ █▀▄ █▀█ █░█░█   █▀█ █░█ █░░ █▀▀ █▀
@@ -206,12 +208,14 @@ in
         bind =
           [
             # F keypress
-            "$mod, F, exec, floorp"
+            "$mod, F, exec, brave"
             "$mod SHIFT, F, togglefloating, "
             # C keypress
             "$mod, C, killactive, "
             # M keypress
             "$mod SHIFT, M, exit, "
+            "$mod, M, exit, "
+
             "SUPER, T, exec, $terminal"
             # W keypress
             "$mod, W, exec, $menu"
@@ -226,13 +230,6 @@ in
             # Terminal and Alacritty for $mod + {T, A}
             "$mod, code:36, exec, $multiplexer" # ENTER key
             "$mod SHIFT, code:36, exec, $terminal"
-
-            # Hycov
-            "$mod, tab, hycov:toggleoverview"
-            "$mod, left, hycov:movefocus,l"
-            "$mod, right, hycov:movefocus,r"
-            "$mod, up, hycov:movefocus,u"
-            "$mod, down, hycov:movefocus,d"
 
             # File manager $mod + {F}
             "$mod, P, pseudo, # dwindle"
@@ -391,10 +388,6 @@ in
         dwindle = {
           pseudotile = true;
           preserve_split = true;
-        };
-
-        master = {
-          new_is_master = true;
         };
 
         misc =

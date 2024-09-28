@@ -23,7 +23,6 @@ in
   ];
 
   config = {
-    nixpkgs.config.allowUnfree = true;
     xeta = {
       kernel = {
         enable = true;
@@ -63,8 +62,12 @@ in
         rustdesk = enabled;
       };
       desktop = {
-        hyprland = disabled;
+        hyprland = {
+          enable = true;
+          xwayland = true;
+        };
         plasma6 = enabled;
+        river = disabled;
       };
       development = {
         rust = enabled;
@@ -78,7 +81,10 @@ in
         odin = enabled;
 
         extras = {
-          cli = with pkgs; [ lazygit ];
+          cli = with pkgs; [
+            tmux
+            lazygit
+          ];
         };
       };
       audio = {
@@ -142,11 +148,9 @@ in
       };
     };
 
-    console = {
-      font = "JetBrains Mono Nerd Font";
-      keyMap = lib.mkDefault "us";
-      useXkbConfig = true;
-    };
+    console =
+      {
+      };
 
     environment = {
       variables = {
@@ -155,7 +159,12 @@ in
         KITTY_ENABLE_WAYLAND = "1";
         EDITOR = "nvim";
       };
+
       systemPackages = with pkgs; [
+        vivaldi
+        code-cursor
+        brave
+        tor-browser
         cosmic-comp
         cosmic-greeter
         nur.repos.shadowrz.klassy
@@ -164,12 +173,6 @@ in
         prismlauncher
         optifine
         gimp-with-plugins
-        drawing
-        drawpile
-        drawio
-        jre8
-        jre_minimal
-        jre17_minimal
         radeontop
         nixfmt-rfc-style
         lact
@@ -208,6 +211,66 @@ in
             "FiraCode"
           ];
         })
+      ];
+    };
+
+    console = {
+      font = "Tamsyn10x20r";
+      keyMap = lib.mkDefault "us";
+      useXkbConfig = true;
+      packages = with pkgs; [
+        tamzen
+        tamsyn
+        uw-ttyp0
+        spleen
+        dina-font
+        gohufont
+        terminus_font
+        terminus_font_ttf
+      ];
+    };
+
+    fonts = {
+      fontconfig = {
+        enable = true;
+        subpixel.rgba = "rgb";
+        includeUserConf = true;
+        antialias = true;
+        # enableDefaultPackages = true;
+        defaultFonts = {
+          serif = [ "Noto Serif" ];
+          sansSerif = [ "Noto Sans" ];
+          monospace = [ "JetBrains Mono" ];
+          emoji = [ "Noto Color Emoji" ];
+        };
+        hinting = {
+          enable = true;
+          style = "full";
+        };
+      };
+      fontDir.enable = true;
+      packages = with pkgs; [
+        fira-code
+        fira-code-nerdfont
+        jetbrains-mono
+        roboto-mono
+        roboto-slab
+        roboto-serif
+        fira-sans
+        source-sans
+        source-serif
+        source-code-pro
+        hack-font
+        noto-fonts
+        noto-fonts-cjk
+        inter
+        melete
+        raleway
+        nacelle
+        open-dyslexic
+        unscii
+        spleen
+        ucs-fonts
       ];
     };
 

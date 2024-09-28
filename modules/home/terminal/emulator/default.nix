@@ -41,7 +41,7 @@ in
         enable = true;
         package = pkgs.kitty;
         font = {
-          name = "FiraCode";
+          name = "JetBrains Mono Nerd Font";
           size = 12;
         };
         environment = {

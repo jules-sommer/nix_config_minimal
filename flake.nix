@@ -4,7 +4,7 @@
     stable.url = "github:nixos/nixpkgs/24.05";
     unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -109,7 +109,11 @@
           fenix.overlays.default
           oxalica.overlays.default
           nur.overlay
+          zig-overlay.overlays.default
           (_: prev: {
+            zen-browser = zen-browser.packages.${prev.system}.specific;
+            zig = zig-overlay.packages.${prev.system}.master;
+            zig_from_src = inputs.zig-src.packages.${prev.system}.zig;
             nixvim = nixvim-flake.packages.${prev.system}.default;
             # locally compiled version of zig-master and zls
           })
@@ -130,6 +134,7 @@
       nix = rec {
         pkgs = channels.master // flake.packages;
         inherit (pkgs) lib;
+        inherit (flake) channels-config;
       };
 
       otherLib = flake.lib.mkLib (flake.lib // home-manager.lib);
@@ -138,10 +143,10 @@
     assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? mkOpt;
     {
       inherit lib channels theme;
-      inherit (nix) pkgs;
 
       nixosConfigurations.xeta = nixpkgs.lib.nixosSystem {
         inherit (flake) system;
+        inherit (nix) pkgs;
         specialArgs = {
           inherit
             inputs
@@ -157,10 +162,10 @@
           ## Primary system module @ ./modules/system/default.nix
           ./modules/system
           {
-            home-manager.useGlobalPkgs = false;
-            home-manager.useUserPackages = false;
-            nixpkgs = {
-              inherit (flake) overlays;
+            home-manager = {
+              useGlobalPkgs = false;
+              useUserPackages = false;
+              backupFileExtension = "hm-bak";
             };
           }
         ];

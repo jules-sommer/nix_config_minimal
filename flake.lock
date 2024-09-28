@@ -102,7 +102,7 @@
     },
     "base24-themes_2": {
       "inputs": {
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_5"
       },
       "locked": {
         "lastModified": 1721581494,
@@ -142,9 +142,7 @@
     },
     "fenix": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": "nixpkgs_2",
         "rust-analyzer-src": "rust-analyzer-src"
       },
       "locked": {
@@ -541,11 +539,11 @@
         "systems": "systems_14"
       },
       "locked": {
-        "lastModified": 1710146030,
-        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
+        "lastModified": 1705309234,
+        "narHash": "sha256-uNRRNRKmJyCRC/8y1RqBkqWBLM034y4qN7EprSdmgyA=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
+        "rev": "1ef2e671c3b0c19053962c07dbda38332dcebf26",
         "type": "github"
       },
       "original": {
@@ -559,11 +557,11 @@
         "systems": "systems_15"
       },
       "locked": {
-        "lastModified": 1705309234,
-        "narHash": "sha256-uNRRNRKmJyCRC/8y1RqBkqWBLM034y4qN7EprSdmgyA=",
+        "lastModified": 1710146030,
+        "narHash": "sha256-SZ5L6eA7HJ/nmkzGG7/ISclqe6oZdOZTNoesiInkXPQ=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "1ef2e671c3b0c19053962c07dbda38332dcebf26",
+        "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
         "type": "github"
       },
       "original": {
@@ -1031,6 +1029,7 @@
       },
       "original": {
         "owner": "nix-community",
+        "ref": "master",
         "repo": "home-manager",
         "type": "github"
       }
@@ -1445,7 +1444,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_8": {
+    "nixpkgs_11": {
       "locked": {
         "lastModified": 1725194671,
         "narHash": "sha256-tLGCFEFTB5TaOKkpfw3iYT9dnk4awTP/q4w+ROpMfuw=",
@@ -1485,7 +1484,7 @@
         "git-hooks": "git-hooks_3",
         "home-manager": "home-manager_2",
         "nix-darwin": "nix-darwin",
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_7",
         "nuschtosSearch": "nuschtosSearch",
         "treefmt-nix": "treefmt-nix"
       },
@@ -1508,7 +1507,7 @@
         "base24-themes": "base24-themes_2",
         "flake-parts": "flake-parts_4",
         "neovim-nightly": "neovim-nightly",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_6",
         "nixvim": "nixvim",
         "tokyonight-nvim": "tokyonight-nvim",
         "unstable": "unstable",
@@ -1568,9 +1567,7 @@
     },
     "oxalica": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": "nixpkgs_8"
       },
       "locked": {
         "lastModified": 1728268235,
@@ -1614,7 +1611,7 @@
     "pyprland": {
       "inputs": {
         "flake-compat": "flake-compat_7",
-        "nixpkgs": "nixpkgs_6",
+        "nixpkgs": "nixpkgs_9",
         "poetry2nix": "poetry2nix",
         "systems": "systems_8"
       },
@@ -1637,7 +1634,7 @@
         "flake-utils": "flake-utils_7",
         "gitignore": "gitignore_5",
         "langref": "langref_2",
-        "nixpkgs": "nixpkgs_7",
+        "nixpkgs": "nixpkgs_10",
         "zig-master": "zig-master_3",
         "zig-overlay": "zig-overlay_2"
       },
@@ -1664,7 +1661,7 @@
         "nix-colors": "nix-colors",
         "nix-std": "nix-std",
         "nixos-flake": "nixos-flake",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_4",
         "nixvim-flake": "nixvim-flake",
         "nur": "nur",
         "oxalica": "oxalica",
@@ -2253,6 +2250,24 @@
         "owner": "mitchellh",
         "repo": "zig-overlay",
         "type": "github"
+      }
+    },
+    "zig-src": {
+      "inputs": {
+        "flake-utils": "flake-utils_12",
+        "nixpkgs": "nixpkgs_14"
+      },
+      "locked": {
+        "dirtyRev": "4518f9da172b4290137de6760681e5c19564c5ca-dirty",
+        "dirtyShortRev": "4518f9d-dirty",
+        "lastModified": 1721396476,
+        "narHash": "sha256-nIYTG16fURNlvVZRbeNwr2jDaJ5XjJDicxjMTdgNdQs=",
+        "type": "git",
+        "url": "file:///home/jules/000_dev/000_nix/nix-zig-compiler"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///home/jules/000_dev/000_nix/nix-zig-compiler"
       }
     },
     "zls": {
