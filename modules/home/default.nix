@@ -4,32 +4,111 @@
   lib,
   ...
 }:
+with lib;
 let
-  inherit (lib) enabled;
+  homeDirs = getHomeDirs "jules";
 in
 {
   imports = [
-    ./apps/default.nix
-    ./pkgs/default.nix
-    ./utils/default.nix
+    ./apps
+    ./pkgs
+    ./utils
+    ./desktop
+    ./terminal
   ];
 
   config = {
     assertions = [
       {
         assertion = lib ? mkOpt && lib ? mkIf;
-        message = "lib.mkOpt and lib.mkIf are not available";
+        message = "Could not find flake's lib functions, is the `lib` module argument being sourced from nixpkgs.lib and ./{FLAKE_ROOT}/lib and then provided to all modules via module.args sr extraSpecialArgs";
       }
     ];
+
     xeta = {
-      terminal.emulator = {
+      terminal = {
         enable = true;
-        package = pkgs.kitty;
+        emulator = mkEnabledPkg pkgs.kitty;
+        prompt = mkEnabledPkg pkgs.starship;
+        shell = {
+          enable = true;
+          package = pkgs.nushell;
+          settings = {
+            zoxide = mkEnabledPkg pkgs.zoxide;
+            carapace = mkEnabledPkg pkgs.carapace;
+          };
+        };
+      };
+      desktop = {
+        hyprland = enabled;
+        plasma6 = enabled;
+        river = disabled;
       };
     };
 
-    home.username = "jules";
-    home.homeDirectory = "/home/jules";
-    home.stateVersion = "24.05";
+    xdg = {
+      inherit (homeDirs) configHome;
+    };
+
+    home.packages = with pkgs; [
+      obsidian
+      obsidian-export
+      vencord
+      vesktop
+      dorion
+      cordless
+      # ungoogled-chromium
+      chromium
+      libgen-cli
+      (nerdfonts.override {
+        fonts = [
+          "JetBrainsMono"
+          "Noto"
+          "RobotoMono"
+          "ZedMono"
+          "Ubuntu"
+          "UbuntuMono"
+          "NerdFontsSymbolsOnly"
+          "SpaceMono"
+          "UbuntuSans"
+          "Hack"
+          "FiraCode"
+        ];
+      })
+      # rustdesk
+    ];
+
+    programs = {
+      ripgrep = enabled;
+      fzf = enabled;
+      carapace = enabled;
+      fd = enabled;
+      direnv = {
+        enable = true;
+        enableNushellIntegration = true;
+      };
+      gpg = enabled;
+      go = enabled;
+      gh = {
+        enable = true;
+        gitCredentialHelper = enabled;
+      };
+      fish = {
+        enable = true;
+        shellInit = '''';
+      };
+      broot = {
+        enable = true;
+        enableNushellIntegration = true;
+        enableBashIntegration = true;
+        enableFishIntegration = true;
+      };
+    };
+
+    home = {
+      username = "jules";
+      homeDirectory = homeDirs.home;
+      stateVersion = "24.05";
+    };
   };
 }

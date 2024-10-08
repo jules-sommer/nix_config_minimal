@@ -4,8 +4,8 @@
   config,
   ...
 }:
+with lib;
 let
-  inherit (lib) types mkOpt mkEnableOption mkIf;
   cfg = config.xeta.development.python;
 in
 {
@@ -15,6 +15,6 @@ in
       pip
       pipenv
       python313Full
-    ]; 
+    ];
   };
 }

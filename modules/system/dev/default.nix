@@ -2,22 +2,14 @@
   lib,
   pkgs,
   config,
-  inputs,
-  system,
   ...
 }:
+with lib;
 let
-  inherit (lib) mkOpt types mkEnableOption mkIf;
   cfg = config.xeta.development;
-  anyLangEnabled = lib.any (
-    lang:
-    lib.attrByPath [
-      lang
-      "enable"
-    ] false cfg
-  ) (lib.attrNames cfg);
 
-  cliUtilsEnabled = (cfg.extras.cli != null && lib.length cfg.extras.cli > 0); 
+  anyLangEnabled = (lib.any lib.isEnabled (lib.attrNames cfg));
+  cliUtilsEnabled = cfg.extras.cli != null && lib.length cfg.extras.cli > 0;
 in
 {
   imports = [
@@ -26,6 +18,9 @@ in
     ./ocaml/default.nix
     ./typescript/default.nix
     ./zig/default.nix
+    ./nix/default.nix
+    ./odin/default.nix
+    ./clang/default.nix
   ];
 
   options.xeta.development = {
@@ -66,18 +61,24 @@ in
           # description
           "Runtimes to use for TypeScript.";
     };
-    c = {
+    python = {
+      enable = mkEnableOption "Enable Python configuration.";
+    };
+    odin = {
+      enable = mkEnableOption "Odin lang support";
+    };
+    clang = {
       enable = mkEnableOption "Enable C configuration.";
     };
-
     # Non-language related extras, i.e CLI tools and system utilities.
     extras = {
-      cli = mkOpt (types.nullOr (types.listOf types.package)) null "Additional CLI tools to install for development.";   
+      cli = mkOpt (types.nullOr (
+        types.listOf types.package
+      )) null "Additional CLI tools to install for development.";
     };
   };
 
-  config = mkIf (cliUtilsEnabled) {
-
+  config = mkIf cliUtilsEnabled {
     programs.git = {
       enable = true;
       lfs.enable = true;
@@ -96,11 +97,64 @@ in
       };
     };
 
+    services.mysql = {
+      enable = true;
+      package = pkgs.mariadb_114;
+      ensureUsers = [
+        {
+          name = "jules";
+          ensurePermissions = {
+            "scimag.*" = "ALL PRIVILEGES";
+          };
+        }
+      ];
+      ensureDatabases = [
+        "nextcloud"
+        "matomo"
+      ];
+      initialDatabases = [
+        {
+          name = "scimag";
+          schema = "/home/jules/015_articles-&-research/020_dois/scimag_2020-05-30.sql";
+        }
+      ];
+    };
+
+    # TODO: organize this stuff better
     environment.systemPackages = with pkgs; [
+      # docs and man pages
+      manix
+      man
+      man-pages
+      man-pages-posix
+
+      # filesystem
+      joshuto
+
+      # debugging
+      gdb
+      cgdb
+      gf
+      gdbgui
+      valgrind
+      rr
+      tracy
+      graphite-cli
+
+      # clipboard
       wl-clipboard
       wl-clip-persist
       git
       zed-editor
+      flyctl
+      colort
+      colorz
+      colorstorm
+      okolors
+      epick
+      wl-color-picker
+      colord-gtk4
+      emulsion-palette
       lazygit
       just
       graphite-cli
@@ -131,7 +185,21 @@ in
       busybox
       jujutsu
       nil
-      pzip
+      unzip
+      unzrip
+      peazip
+      ripunzip
+      ripgrep-all
+      lrzip
+      lbzip2
+      lzip
+      clzip
+      bzip2
+      bzip3
+      pbzip2
+      plzip
+      zip
+      gzip
       jql
       jq-lsp
       apx

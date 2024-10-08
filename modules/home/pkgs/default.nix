@@ -1,10 +1,9 @@
-{
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 {
   home.packages = with pkgs; [
-    # TODO: Put your home-manager packages here
+    nixvim
+    youtube-tui
+    gparted
   ];
 }

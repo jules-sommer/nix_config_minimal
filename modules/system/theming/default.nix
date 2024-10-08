@@ -2,12 +2,13 @@
   lib,
   pkgs,
   config,
-  inputs,
-  system,
   ...
 }:
 let
-  inherit (lib) mkOpt types mkEnableOption mkIf;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    ;
   cfg = config.xeta.theming;
 in
 {
@@ -19,26 +20,50 @@ in
 
   config = mkIf cfg.stylix.enable {
     stylix = {
-      enable = cfg.stylix.enable;
-      image = ./assets/zoe-love-4k.png;
+      inherit (cfg.stylix) enable;
+      image = ./assets/city-night-neon-pink.png;
       polarity = "dark";
-
+      cursor.size = 24;
+      homeManagerIntegration = {
+        autoImport = true;
+        followSystem = true;
+      };
+      override = {
+        base00 = "000000";
+      };
+      targets = {
+        nixvim = {
+          enable = true;
+          transparentBackground = {
+            main = true;
+            signColumn = true;
+          };
+        };
+      };
+      opacity = {
+        terminal = 0.75;
+        popups = 0.75;
+        applications = 0.9;
+        desktop = 0.9;
+      };
       fonts = {
-        serif = {
-          package = pkgs.dejavu_fonts;
-          name = "DejaVu Serif";
+        monospace = {
+          package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
+          name = "JetBrainsMono Nerd Font Mono";
         };
         sansSerif = {
-          package = pkgs.dejavu_fonts;
-          name = "DejaVu Sans";
+          package = pkgs.montserrat;
+          name = "Montserrat";
         };
-        monospace = {
-          package = pkgs.jetbrains-mono;
-          name = "Jetbrains Mono";
+        serif = {
+          package = pkgs.montserrat;
+          name = "Montserrat";
         };
-        emoji = {
-          package = pkgs.noto-fonts-emoji;
-          name = "Noto Color Emoji";
+        sizes = {
+          applications = 12;
+          terminal = 15;
+          desktop = 11;
+          popups = 12;
         };
       };
     };

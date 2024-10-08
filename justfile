@@ -48,7 +48,7 @@ extern-build scope="system" action="switch" out="xeta":
   }
 
   if $scope in ["home" "all"] {
-    if $action in ["switch" "build" "test" ] {
+    if $action in ["switch" "build" ] {
       let result = try {
         run-external "home-manager" ($action) "--flake" $".#($out)" | complete
       } catch { |error|
@@ -66,3 +66,15 @@ extern-build scope="system" action="switch" out="xeta":
     print $"(ansi red_bold)Scope of `($scope)` is not a valid scope... exiting.(ansi reset)"
     exit 1
   }
+
+
+extern-build-rewrite scope="system" action="switch" flake="xeta":
+  #!/usr/bin/env nix-shell
+  #! nix-shell -i fish -p fish zig
+
+  set scope "{{scope}}"
+  set action "{{action}}"
+  set out "{{flake}}"
+
+  zig build-exe ./build/build_runner.zig -femit-bin=./build/build_runner
+  exec ./build/build_runner --scope=all --action=switch --flake=xeta

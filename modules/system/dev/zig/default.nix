@@ -2,12 +2,10 @@
   lib,
   pkgs,
   config,
-  inputs,
-  system,
   ...
 }:
 let
-  inherit (lib) mkOpt types mkEnableOption mkIf;
+  inherit (lib) mkIf;
   cfg = config.xeta.development.zig;
 in
 {
@@ -15,7 +13,6 @@ in
     environment.systemPackages = with pkgs; [
       zig
       zls
-      vscode-extensions.ziglang.vscode-zig
     ];
   };
 }
