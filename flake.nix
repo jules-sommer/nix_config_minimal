@@ -40,6 +40,7 @@
     zls.url = "github:zigtools/zls";
     zig-overlay.url = "github:mitchellh/zig-overlay";
 
+    zen-browser.url = "github:MarceColl/zen-browser-flake";
     # local flake building zig from master
     # zig-master = {
     #   url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
@@ -74,6 +75,7 @@
       base24-themes,
       home-manager,
       fenix,
+      zen-browser,
       zig-overlay,
       nur,
       oxalica,
