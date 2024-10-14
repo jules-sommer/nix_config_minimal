@@ -41,16 +41,6 @@
     zig-overlay.url = "github:mitchellh/zig-overlay";
 
     zen-browser.url = "github:MarceColl/zen-browser-flake";
-    # local flake building zig from master
-    # zig-master = {
-    #   url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-    #
-    # zls-master = {
-    #   url = "/home/jules/000_dev/010_zig/010_repos/zls";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
 
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
@@ -106,27 +96,17 @@
           compileZigFromSrc = false;
         };
         overlays = [
-          # zig-overlay.overlays.default
+          zig-overlay.overlays.default
           neovim-nightly-overlay.overlays.default
           fenix.overlays.default
           oxalica.overlays.default
           nur.overlay
-          zig-overlay.overlays.default
           (_: prev: {
             zen-browser = zen-browser.packages.${prev.system}.specific;
             zig = zig-overlay.packages.${prev.system}.master;
-            zig_from_src = inputs.zig-src.packages.${prev.system}.zig;
             nixvim = nixvim-flake.packages.${prev.system}.default;
-            # locally compiled version of zig-master and zls
           })
           (import ./overlays/kernel/default.nix { inherit (self) inputs channels; })
-          (
-            _: prev:
-            nixpkgs.lib.optionalAttrs options.compileZigFromSrc {
-              inherit (inputs.zig-master.packages.${prev.system}) zig;
-              inherit (inputs.zls-master.packages.${prev.system}) zls;
-            }
-          )
         ];
         packages = import ./packages/default.nix { inherit (nix) pkgs; };
       };
