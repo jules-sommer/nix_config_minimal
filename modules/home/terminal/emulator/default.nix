@@ -58,15 +58,15 @@ in
           linux_display_server = "wayland";
           cursor_text_color = theme.colors.base06;
           tab_bar_edge = "bottom";
-          enabled_layouts = "splits";
+          # enabled_layouts = "splits";
           tab_bar_style = "slant";
           tab_bar_margin_width = 1;
           tab_bar_margin_height = "1.0 1.0";
           transparent = true;
           scrollback_lines = 15000;
           copy_on_select = "yes";
-          background_opacity = "0.7";
-          background_blur = 30;
+          background_opacity = "0.8";
+          background_blur = 50;
           background = "#000000";
         };
       };

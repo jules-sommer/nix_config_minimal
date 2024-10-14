@@ -57,6 +57,7 @@ in
       vesktop
       dorion
       cordless
+      inkscape-with-extensions
       # ungoogled-chromium
       chromium
       libgen-cli

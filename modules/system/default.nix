@@ -31,6 +31,7 @@ in
         experimentalRustModuleSupport = false;
         appimageSupport = true;
       };
+      fonts = enabled;
       networking = {
         enable = true;
         tcp_bbr = enabled;
@@ -148,10 +149,6 @@ in
       };
     };
 
-    console =
-      {
-      };
-
     environment = {
       variables = {
         LOG_ICONS = "true";
@@ -185,8 +182,6 @@ in
         nixel
         lix
         nixVersions.git # install latest (git master) version of nix pkg manager
-        font-awesome
-        jetbrains-mono
         qbittorrent
         btop
         mpv
