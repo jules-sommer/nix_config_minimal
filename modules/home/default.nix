@@ -28,7 +28,10 @@ in
     xeta = {
       terminal = {
         enable = true;
-        emulator = mkEnabledPkg pkgs.kitty;
+        emulator = {
+          kitty = enabled;
+          alacritty = enabled;
+        };
         prompt = mkEnabledPkg pkgs.starship;
         shell = {
           enable = true;
@@ -40,7 +43,7 @@ in
         };
       };
       desktop = {
-        hyprland = enabled;
+        hyprland = disabled;
         plasma6 = enabled;
         river = disabled;
       };
@@ -56,9 +59,11 @@ in
       vencord
       vesktop
       dorion
+      signalbackup-tools
+      signal-cli
+      signal-desktop-beta
       cordless
       inkscape-with-extensions
-      # ungoogled-chromium
       chromium
       libgen-cli
       (nerdfonts.override {
@@ -76,7 +81,6 @@ in
           "FiraCode"
         ];
       })
-      # rustdesk
     ];
 
     programs = {

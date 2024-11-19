@@ -6,9 +6,6 @@
   ...
 }:
 {
-  options.xeta.system =
-    {
-    };
 
   config = {
     # This will additionally add your inputs to the system's legacy channels

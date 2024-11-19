@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  system,
   ...
 }:
 let
@@ -26,9 +27,7 @@ in
     xeta = {
       kernel = {
         enable = true;
-        package = pkgs.linuxPackages_zen;
-        v4l2loopback = true;
-        experimentalRustModuleSupport = false;
+        package = pkgs.linuxKernel.kernels.linux_xanmod_latest;
         appimageSupport = true;
       };
       fonts = enabled;
@@ -58,13 +57,14 @@ in
         };
       };
       services = {
+        proton-bridge = enabled;
         hydroxide = enabled;
         ollama = enabled;
         rustdesk = enabled;
       };
       desktop = {
         hyprland = {
-          enable = true;
+          enable = false;
           xwayland = true;
         };
         plasma6 = enabled;
@@ -82,16 +82,24 @@ in
         odin = enabled;
 
         extras = {
-          cli = with pkgs; [
-            tmux
-            lazygit
-          ];
+          cli =
+            with pkgs;
+            [
+            ];
         };
       };
       audio = {
         pipewire = enabled;
       };
     };
+
+    nix.settings.system-features = lib.mkForce [
+      "nixos-test"
+      "benchmark"
+      "big-parallel"
+      "kvm"
+      "gccarch-znver4"
+    ];
 
     programs = {
       nix-ld.enable = true;
@@ -119,14 +127,14 @@ in
       loader.systemd-boot.enable = true;
       loader.efi.canTouchEfiVariables = true;
 
-      binfmt.registrations.appimage = {
-        wrapInterpreterInShell = false;
-        interpreter = "${pkgs.appimage-run}/bin/appimage-run";
-        recognitionType = "magic";
-        offset = 0;
-        mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
-        magicOrExtension = ''\x7fELF....AI\x02'';
-      };
+      # binfmt.registrations.appimage = {
+      #   wrapInterpreterInShell = false;
+      #   interpreter = "${pkgs.appimage-run}/bin/appimage-run";
+      #   recognitionType = "magic";
+      #   offset = 0;
+      #   mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
+      #   magicOrExtension = ''\x7fELF....AI\x02'';
+      # };
     };
     networking = {
       hostName = "xeta";
@@ -158,17 +166,14 @@ in
       };
 
       systemPackages = with pkgs; [
-        vivaldi
+        tmux
         code-cursor
-        brave
         tor-browser
-        cosmic-comp
-        cosmic-greeter
         nur.repos.shadowrz.klassy
         protonvpn-gui
         protonvpn-cli
-        prismlauncher
-        optifine
+        # prismlauncher
+        # optifine
         gimp-with-plugins
         radeontop
         nixfmt-rfc-style

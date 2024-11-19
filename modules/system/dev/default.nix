@@ -132,6 +132,7 @@ in
       joshuto
 
       # debugging
+      rr
       gdb
       cgdb
       gf
@@ -139,22 +140,12 @@ in
       valgrind
       rr
       tracy
-      graphite-cli
 
       # clipboard
       wl-clipboard
       wl-clip-persist
       git
-      zed-editor
       flyctl
-      colort
-      colorz
-      colorstorm
-      okolors
-      epick
-      wl-color-picker
-      colord-gtk4
-      emulsion-palette
       lazygit
       just
       graphite-cli
@@ -171,8 +162,6 @@ in
       dig
       bat
       jq
-      helix
-      deploy-rs
       nixfmt-rfc-style
       nix-index
       nix-prefetch-git
@@ -181,28 +170,17 @@ in
       starship
       zoxide
       broot
-      nushell
       busybox
       jujutsu
       nil
       unzip
       unzrip
-      peazip
       ripunzip
       ripgrep-all
-      lrzip
-      lbzip2
-      lzip
-      clzip
-      bzip2
-      bzip3
-      pbzip2
-      plzip
       zip
       gzip
       jql
       jq-lsp
-      apx
     ];
   };
 }

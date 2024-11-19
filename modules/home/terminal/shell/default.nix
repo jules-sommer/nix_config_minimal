@@ -66,17 +66,14 @@ in
         inherit (cfg) package;
         extraEnv = builtins.readFile ./profiles/nushell/zoxide.nu;
         shellAliases = {
-          ll = "ls -la";
           ff = "fastfetch";
           br = "broot -hips";
           yank = "wl-copy";
           put = "wl-paste";
           sync = "rsync -avh --progress";
           mirror_sync = "rsync -avzHAX --delete --numeric-ids --info=progress2";
-          cp = "rsync";
           cd = "z";
           ci = "zi";
-          tree = "dutree";
           clone = "gix clone";
         };
 

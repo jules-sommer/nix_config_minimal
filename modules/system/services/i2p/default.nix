@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  pkgs,
   ...
 }:
 let
@@ -22,7 +23,12 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf (cfg.i2p.enable || cfg.i2pd.enable) {
+    environment.systemPackages = with pkgs; [
+      i2p
+      i2pd
+    ];
+
     services.i2p = {
       inherit (cfg.i2p) enable;
     };

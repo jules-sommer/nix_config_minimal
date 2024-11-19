@@ -1,32 +1,50 @@
 {
   lib,
-  inputs,
   config,
   pkgs,
   ...
 }:
 let
-  inherit (lib) mkOpt types mkEnableOption mkIf;
+  inherit (lib)
+    mkOpt
+    types
+    mkEnableOption
+    mkIf
+    ;
   cfg = config.xeta.kernel;
 in
 {
   options.xeta.kernel = {
     enable = mkEnableOption "Enable kernel configuration.";
-    package = mkOpt (types.nullOr types.attrs) pkgs.linuxPackages_zen "pkgs.linuxPackages_kernel to use.";
+    package =
+      mkOpt (types.nullOr types.attrs) pkgs.linuxPackages_xanmod_latest
+        "pkgs.linuxPackages_kernel to use.";
 
     # other module related opts
-    v4l2loopback = mkEnableOption "Enable v4l2loopback kernel modules.";
+    modules =
+      mkOpt (types.listOf types.package) [ ]
+        "List of Linux kernel modules to build the kernel with.";
+
+    # v4l2loopback = mkEnableOption "Enable v4l2loopback kernel modules.";
     experimentalRustModuleSupport = mkEnableOption "Enable experimental Rust kernel module support.";
     appimageSupport = mkEnableOption "Enable appimage support via binfmt.registrations.appimage.";
   };
 
-  config = mkIf (cfg.enable) {
-    assertions = [
-      # {
-      #   # if enabled, package must be set
-      #   assertion = cfg.package != null;
-      #   message = "[xeta.nixos.kernel] config.xeta.kernel.package must be set if config.xeta.kernel.enable is true";
-      # }
+  config = mkIf cfg.enable {
+    programs.appimage = mkIf cfg.appimageSupport {
+      enable = true;
+      binfmt = true;
+      package = pkgs.appimage-run.override {
+        extraPkgs = pkgs: [
+          pkgs.ffmpeg
+          pkgs.imagemagick
+        ];
+      };
+    };
+
+    # so perf can find kernel modules
+    systemd.tmpfiles.rules = [
+      "L /lib - - - - /run/current/system/lib"
     ];
 
     boot = lib.mkMerge [
@@ -41,28 +59,35 @@ in
           }
         ];
       })
-      (mkIf cfg.v4l2loopback {
-        kernelModules = [ "v4l2loopback" ];
-        # if v4l2loopback is enabled, find the package via the actively set `config.boot.kernelPackages`
-        extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+      (mkIf ((lib.length cfg.modules) > 0) {
+        kernelModules =
+          with pkgs.linuxPackages_linux_xanmod_latest;
+          [
+            v4l2loopback
+            zfs_unstable
+            virtio_vmmci
+            virtualbox
+            virtualboxGuestAdditions
+            zenergy
+            zenpower
+            ryzen-smu
+            rr-zen_workaround
+          ]
+          // cfg.modules;
       })
-      (mkIf cfg.appimageSupport {
-        binfmt.registrations.appimage = {
-          wrapInterpreterInShell = false;
-          interpreter = "${pkgs.appimage-run}/bin/appimage-run";
-          recognitionType = "magic";
-          offset = 0;
-          mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
-          magicOrExtension = ''\x7fELF....AI\x02'';
-        };
-      }) 
-      # default settings if kernel module (within this flake) is enabled via `options.xeta.kernel.enable = true;`
+
       {
-        kernelPackages = cfg.package;
-        # Needed For Some Steam Games
-        kernel.sysctl = {
-          "vm.max_map_count" = 2147483642;
+        kernelPackages = pkgs.linuxPackages_xanmod_latest;
+        kernelParams = [ ];
+        kernel = {
+          enable = true;
+          sysctl = {
+            "vm.max_map_count" = 2147483642; # Needed For Some Steam Games
+            "kernel.perf_event_paranoid" = -1; # needed for tracing/debugging programs like rr
+            "kernel.kptr_restrict" = lib.mkForce 0; # transparent ptr addresses for kernel memory
+          };
         };
+
         plymouth.enable = true;
       }
     ];

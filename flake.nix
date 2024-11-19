@@ -51,9 +51,9 @@
       url = "github:hyprland-community/pyprland";
     };
 
-    river = {
-      url = "/home/jules/000_dev/010_zig/010_repos/river";
-    };
+    # river = {
+    #   url = "/home/jules/000_dev/010_zig/010_repos/river";
+    # };
   };
   outputs =
     {
@@ -67,6 +67,7 @@
       fenix,
       zen-browser,
       zig-overlay,
+      zls,
       nur,
       oxalica,
       nixvim-flake,
@@ -76,8 +77,14 @@
     let
       channels = {
         master = import nixpkgs {
-          inherit (flake) system overlays;
+          inherit (flake) overlays;
           config.allowUnfree = true;
+
+          localSystem = {
+            # gcc.arch = "znver4";
+            # gcc.tune = "znver4";
+            inherit (flake) system;
+          };
         };
         unstable = import unstable { inherit (flake) system; };
         stable = import stable { inherit (flake) system; };
@@ -102,6 +109,7 @@
           oxalica.overlays.default
           nur.overlay
           (_: prev: {
+            inherit (zls.outputs.packages.${prev.system}) zls;
             zen-browser = zen-browser.packages.${prev.system}.specific;
             zig = zig-overlay.packages.${prev.system}.master;
             nixvim = nixvim-flake.packages.${prev.system}.default;
@@ -139,6 +147,21 @@
           inherit (flake) system;
         };
         modules = [
+          # {
+          #   nix.settings = {
+          #     system-features = lib.mkForce [
+          #       "nixos-test"
+          #       "benchmark"
+          #       "big-parallel"
+          #       "kvm"
+          #       "gccarch-znver4"
+          #     ];
+          #     auto-optimise-store = true;
+          #     extra-system-features = lib.mkForce [
+          #       "gccarch-znver4"
+          #     ];
+          #   };
+          # }
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           ## Primary system module @ ./modules/system/default.nix
@@ -173,6 +196,7 @@
               nixpkgs = {
                 config.allowUnfree = true;
               };
+
               home = {
                 packages = [
                   nix.pkgs.home-manager

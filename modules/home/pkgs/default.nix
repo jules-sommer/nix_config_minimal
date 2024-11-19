@@ -1,9 +1,8 @@
 { pkgs, ... }:
 
 {
-  home.packages = with pkgs; [
-    nixvim
-    youtube-tui
-    gparted
-  ];
+  home.packages =
+    with pkgs;
+    [
+    ];
 }

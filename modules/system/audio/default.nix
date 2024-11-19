@@ -1,6 +1,16 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  inherit (lib) mkIf mkEnableOption mkOpt types;
+  inherit (lib)
+    mkIf
+    mkEnableOption
+    mkOpt
+    types
+    ;
   cfg = config.xeta.audio;
 in
 {
@@ -9,13 +19,16 @@ in
       enable = mkEnableOption "Enable pipewire audio support.";
     };
     patchbay = {
-      enable = mkEnableOption "Enable KDE/Gnome calculator apps."; 
+      enable = mkEnableOption "Enable KDE/Gnome calculator apps.";
       package = mkOpt (types.package) "Package to use as the default patchbay for pipewire.";
     };
   };
 
   config = mkIf cfg.pipewire.enable {
     environment.systemPackages = with pkgs; [
+      friture
+      sonic-visualiser
+
       pavucontrol
       helvum
     ];
