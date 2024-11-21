@@ -6,16 +6,13 @@
 }:
 let
   inherit (lib)
-    mkBoolOpt
-    types
     mkEnableOption
     mkIf
-    mkMerge
     ;
-  cfg = config.xeta.apps.pdf;
+  cfg = config.xeta.apps;
 in
 {
-  options.xeta.apps.pdf = {
+  options.xeta.apps = {
     okular = {
       enable = mkEnableOption "Enable Okular PDF editor.";
     };
@@ -24,10 +21,10 @@ in
     };
   };
 
-  config = {
+  config = mkIf (cfg.okular.enable || cfg.libreoffice.enable) {
     environment.systemPackages = with pkgs; [
-      okular
-      libreoffice
+      (mkIf cfg.okular.enable okular)
+      (mkIf cfg.libreoffice.enable libreoffice)
     ];
   };
 }

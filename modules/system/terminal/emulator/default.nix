@@ -15,9 +15,9 @@ in
 
   config = {
     environment.systemPackages = with pkgs; [
-      foot
+      # foot
       kitty
-      alacritty
+      # alacritty
     ];
   };
 }

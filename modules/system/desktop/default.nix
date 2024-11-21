@@ -1,10 +1,18 @@
-{ ... }:
+{ lib, config, ... }:
+let
+  inherit (lib) mkEnableOption;
+  cfg = config.xeta.desktop.xserver;
+in
 {
   imports = [
     ./hyprland
     ./plasma6
     ./river
   ];
+
+  options.xeta.desktop.xserver = {
+    enable = mkEnableOption "Enable xserver.";
+  };
 
   config = {
     # enable xserver for any desktop env that needs it
@@ -15,7 +23,7 @@
     };
     services = {
       xserver = {
-        enable = true;
+        inherit (cfg) enable;
         autoRepeatDelay = 200;
         autoRepeatInterval = 30;
         autorun = true;

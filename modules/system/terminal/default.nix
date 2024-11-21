@@ -33,9 +33,7 @@ in
           jq
           bat
           file
-          starship
           git
-          tree
         ];
       };
     };

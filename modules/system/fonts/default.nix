@@ -28,12 +28,12 @@ in
       packages = with pkgs; [
         tamzen
         tamsyn
-        uw-ttyp0
-        spleen
-        dina-font
-        gohufont
-        terminus_font
-        terminus_font_ttf
+        # uw-ttyp0
+        # spleen
+        # dina-font
+        # gohufont
+        # terminus_font
+        # terminus_font_ttf
       ];
     };
     fonts = {
@@ -59,39 +59,38 @@ in
         fira-code
         fira-code-nerdfont
         jetbrains-mono
-        roboto-mono
-        roboto-slab
-        roboto-serif
-        fira-sans
-        source-sans
-        source-serif
+        # roboto-mono
+        # roboto-slab
+        # roboto-serif
+        # fira-sans
+        # source-sans
+        # source-serif
         source-code-pro
         hack-font
         noto-fonts
-        noto-fonts-cjk
-        inter
-        melete
-        raleway
-        nacelle
+        # inter
+        # melete
+        # raleway
+        # nacelle
         open-dyslexic
-        unscii
-        spleen
-        ucs-fonts
-        ubuntu_font_family
+        # unscii
+        # spleen
+        # ucs-fonts
+        # ubuntu_font_family
         font-awesome
-        noto-fonts-cjk-sans
-        noto-fonts-cjk-serif
+        # noto-fonts-cjk-sans
+        # noto-fonts-cjk-serif
         noto-fonts-emoji
         (nerdfonts.override {
           fonts = [
             "JetBrainsMono"
             "Noto"
-            "RobotoMono"
-            "ZedMono"
-            "Ubuntu"
+            # "RobotoMono"
+            # "ZedMono"
+            # "Ubuntu"
             "UbuntuMono"
             "NerdFontsSymbolsOnly"
-            "SpaceMono"
+            # "SpaceMono"
             "UbuntuSans"
             "Hack"
             "FiraCode"

@@ -1,8 +1,7 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/master";
-    stable.url = "github:nixos/nixpkgs/24.05";
-    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    master.url = "github:nixos/nixpkgs/master";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -12,31 +11,23 @@
 
     nur.url = "github:nix-community/NUR";
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    nixos-flake.url = "github:srid/nixos-flake";
-
-    nixvim-flake.url = "/home/jules/000_dev/000_nix/nixvim_flake";
+    nixvim-flake.url = "github:jules-sommer/nixvim-flake";
 
     nix-std = {
       url = "github:chessai/nix-std";
     };
 
     stylix.url = "github:danth/stylix";
-    nix-colors = {
-      url = "github:misterio77/nix-colors";
-    };
+    stylix.inputs.base16.follows = "base16";
+    # TODO: This is a fork of base16.nix to fix a bug in a recent commit, remove when possible:
+    # [as per this issue](https://github.com/danth/stylix/issues/642)
+    base16.url = "github:Noodlez1232/base16.nix/slugify-fix";
 
     oxalica = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Ziglang
     zls.url = "github:zigtools/zls";
     zig-overlay.url = "github:mitchellh/zig-overlay";
 
@@ -47,24 +38,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    pyprland = {
-      url = "github:hyprland-community/pyprland";
-    };
-
-    # river = {
-    #   url = "/home/jules/000_dev/010_zig/010_repos/river";
-    # };
   };
   outputs =
     {
       self,
-      nixpkgs,
       stylix,
-      unstable,
-      stable,
+      master,
+      nixpkgs,
       base24-themes,
       home-manager,
-      fenix,
       zen-browser,
       zig-overlay,
       zls,
@@ -75,26 +57,36 @@
       ...
     }@inputs:
     let
-      channels = {
-        master = import nixpkgs {
-          inherit (flake) overlays;
-          config.allowUnfree = true;
-
-          localSystem = {
-            # gcc.arch = "znver4";
-            # gcc.tune = "znver4";
-            inherit (flake) system;
+      channels =
+        let
+          mkChannel =
+            input:
+            import input {
+              inherit (flake) overlays system;
+              config.allowUnfree = true;
+            };
+        in
+        rec {
+          master = import master {
+            inherit (flake) overlays system;
+            config.allowUnfree = true;
           };
+          unstable = import nixpkgs {
+            inherit (flake) overlays system;
+            config.allowUnfree = true;
+          };
+          nur = import nur { nurpkgs = import nixpkgs { inherit (flake) system; }; };
         };
-        unstable = import unstable { inherit (flake) system; };
-        stable = import stable { inherit (flake) system; };
-        nur = import nur { nurpkgs = import nixpkgs { inherit (flake) system; }; };
-      };
 
       mkLib = nixpkgs: nixpkgs.lib.extend (_: _: flake.lib // home-manager.lib);
 
       flake = rec {
         system = "x86_64-linux";
+        localSystem = {
+          inherit system;
+          gcc.arch = "znver4";
+          gcc.tune = "znver4";
+        };
         lib = import ./lib/default.nix {
           inherit inputs;
           inherit (nixpkgs) lib;
@@ -105,7 +97,6 @@
         overlays = [
           zig-overlay.overlays.default
           neovim-nightly-overlay.overlays.default
-          fenix.overlays.default
           oxalica.overlays.default
           nur.overlay
           (_: prev: {
@@ -114,7 +105,6 @@
             zig = zig-overlay.packages.${prev.system}.master;
             nixvim = nixvim-flake.packages.${prev.system}.default;
           })
-          (import ./overlays/kernel/default.nix { inherit (self) inputs channels; })
         ];
         packages = import ./packages/default.nix { inherit (nix) pkgs; };
       };
@@ -122,15 +112,15 @@
       theme = base24-themes.themes.tokyo_night_dark;
 
       nix = rec {
-        pkgs = channels.master // flake.packages;
+        pkgs = channels.unstable // flake.packages;
         inherit (pkgs) lib;
         inherit (flake) channels-config;
       };
-
-      otherLib = flake.lib.mkLib (flake.lib // home-manager.lib);
-      lib = mkLib inputs.nixpkgs;
+      lib = mkLib nix.pkgs;
     in
-    assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? mkOpt;
+    assert lib.assertMsg (
+      builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? mkOpt
+    ) "failed to build flake library correctly.";
     {
       inherit lib channels theme;
 
@@ -147,29 +137,16 @@
           inherit (flake) system;
         };
         modules = [
-          # {
-          #   nix.settings = {
-          #     system-features = lib.mkForce [
-          #       "nixos-test"
-          #       "benchmark"
-          #       "big-parallel"
-          #       "kvm"
-          #       "gccarch-znver4"
-          #     ];
-          #     auto-optimise-store = true;
-          #     extra-system-features = lib.mkForce [
-          #       "gccarch-znver4"
-          #     ];
-          #   };
-          # }
+          inputs.base16.nixosModule
           stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           ## Primary system module @ ./modules/system/default.nix
           ./modules/system
           {
+            boot.tmp.useTmpfs = true;
             home-manager = {
-              useGlobalPkgs = false;
-              useUserPackages = false;
+              useGlobalPkgs = true;
+              useUserPackages = true;
               backupFileExtension = "hm-bak";
             };
           }
@@ -192,11 +169,8 @@
           modules = [
             ## Primary home-manager module @ ./modules/home/default.nix
             ./modules/home
+            stylix.homeManagerModules.stylix
             {
-              nixpkgs = {
-                config.allowUnfree = true;
-              };
-
               home = {
                 packages = [
                   nix.pkgs.home-manager

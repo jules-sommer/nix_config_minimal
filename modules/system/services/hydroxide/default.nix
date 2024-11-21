@@ -7,9 +7,7 @@
 let
   inherit (lib)
     mkIf
-    mkOpt
     mkEnableOption
-    types
     ;
   cfg = config.xeta.services.hydroxide;
 in

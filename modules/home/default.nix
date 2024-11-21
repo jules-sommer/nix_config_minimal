@@ -10,8 +10,6 @@ let
 in
 {
   imports = [
-    ./apps
-    ./pkgs
     ./utils
     ./desktop
     ./terminal

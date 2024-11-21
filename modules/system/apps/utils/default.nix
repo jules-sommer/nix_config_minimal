@@ -10,12 +10,12 @@ let
     mkIf
     mkMerge
     ;
-  cfg = config.xeta.apps.utils;
+  cfg = config.xeta.apps;
 in
 {
-  options.xeta.apps.utils = {
+  options.xeta.apps = {
     calculator = {
-      enable = mkEnableOption "Enable KDE/Gnome calculator apps.";
+      enable = mkEnableOption "Enable KDE calculator";
     };
   };
 
@@ -23,11 +23,7 @@ in
     environment.systemPackages =
       with pkgs;
       (mkMerge [
-        [
-
-        ]
-        (mkIf (cfg.calculator.enable) [
-          gnome-calculator
+        (mkIf cfg.calculator.enable [
           kdePackages.kalk
         ])
       ]);

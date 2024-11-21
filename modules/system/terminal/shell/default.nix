@@ -12,10 +12,11 @@ let
 in
 {
   options.xeta.terminal.shell = {
-    enable = mkEnableOption "Terminal shell configuration";
+    fish = mkEnableOption "Enable fish.";
+    zsh = mkEnableOption "Enable zsh.";
   };
 
-  config = mkIf cfg.enable {
+  config = {
     programs = {
       direnv = {
         enable = true;
@@ -28,11 +29,14 @@ in
         enableBashIntegration = true;
       };
 
-      fish = {
+      fish = mkIf cfg.fish {
         enable = true;
         shellInit = lib.concatStringsSep "\n" [
           "set fish_greeting ''"
         ];
+        shellAliases = {
+          ls = "eza --icons --hyperlink --color";
+        };
         shellAbbrs = {
           lst = "eza --icons=always --hyperlink --color=always --color-scale=all --color-scale-mode=gradient -TL1";
           ff = "fastfetch";
@@ -41,7 +45,6 @@ in
           put = "wl-paste";
           sync = "rsync -avh --progress";
           mirror_sync = "rsync -avzHAX --delete --numeric-ids --info=progress2";
-          cp = "rsync";
           cd = "z";
           ci = "zi";
           clone = "gix clone";
@@ -50,7 +53,7 @@ in
           gca = "git commit -a";
         };
       };
-      zsh = {
+      zsh = mkIf cfg.zsh {
         enable = true;
         syntaxHighlighting = {
           enable = true;

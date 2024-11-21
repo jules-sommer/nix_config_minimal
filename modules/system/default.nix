@@ -6,6 +6,7 @@
 }:
 let
   inherit (lib) disabled enabled;
+  homeDirs = lib.getHomeDirs "jules";
 in
 {
   imports = [
@@ -35,32 +36,24 @@ in
         enable = true;
         tcp_bbr = enabled;
       };
-      theming = {
-        stylix = enabled;
-      };
+      theming.stylix = enabled;
       apps = {
-        kde = {
-          kmail = enabled;
-        };
-        pdf = {
-          okular = enabled;
-        };
-        utils = {
-          calculator = enabled;
-        };
+        kmail = enabled;
+        okular = enabled;
+        libreoffice = enabled;
+        calculator = enabled;
       };
       terminal = {
         enable = true;
-        shell = enabled;
-        emulator = {
-          enable = true;
-        };
+        shell.fish = true;
+        emulator = enabled;
+        prompt = enabled;
       };
       services = {
         proton-bridge = enabled;
-        hydroxide = enabled;
-        ollama = enabled;
-        rustdesk = enabled;
+        hydroxide = disabled;
+        ollama = disabled;
+        rustdesk = disabled;
       };
       desktop = {
         hyprland = {
@@ -101,6 +94,10 @@ in
       "gccarch-znver4"
     ];
 
+    nix.settings.extra-system-features = lib.mkForce [
+      "gccarch-znver4"
+    ];
+
     programs = {
       nix-ld.enable = true;
       command-not-found.enable = false;
@@ -123,22 +120,8 @@ in
       };
     };
 
-    boot = {
-      loader.systemd-boot.enable = true;
-      loader.efi.canTouchEfiVariables = true;
-
-      # binfmt.registrations.appimage = {
-      #   wrapInterpreterInShell = false;
-      #   interpreter = "${pkgs.appimage-run}/bin/appimage-run";
-      #   recognitionType = "magic";
-      #   offset = 0;
-      #   mask = ''\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\xff'';
-      #   magicOrExtension = ''\x7fELF....AI\x02'';
-      # };
-    };
     networking = {
       hostName = "xeta";
-      # networking.wireless.enable = true;
       networkmanager.enable = true;
       firewall.enable = false;
     };
@@ -157,17 +140,28 @@ in
       };
     };
 
+    programs.nh = {
+      enable = true;
+      clean = {
+        enable = true;
+        extraArgs = "--keep-since 4d --keep 3";
+      };
+      flake = "${homeDirs.home}/000_dev/000_nix/nix_config_minimal";
+    };
+
     environment = {
       variables = {
         LOG_ICONS = "true";
         KITTY_CONFIG_DIRECTORY = "/home/jules/.config/kitty";
         KITTY_ENABLE_WAYLAND = "1";
         EDITOR = "nvim";
+        NIX_BUILD_CORES = 8;
+        GC_INITIAL_HEAP_SIZE = "8G";
       };
 
       systemPackages = with pkgs; [
         tmux
-        code-cursor
+        # code-cursor
         tor-browser
         nur.repos.shadowrz.klassy
         protonvpn-gui
@@ -179,20 +173,17 @@ in
         nixfmt-rfc-style
         lact
         neovim
-        hydroxide
+        # hydroxide
         bitwarden
         bitwarden-cli
         home-manager
-        helix
-        nixel
-        lix
         nixVersions.git # install latest (git master) version of nix pkg manager
         qbittorrent
         btop
         mpv
         vlc
-        metasploit
-        armitage
+        # metasploit
+        # armitage
         kitty
         localsend
       ];

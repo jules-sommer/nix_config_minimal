@@ -19,8 +19,8 @@ in
       enable = mkEnableOption "Enable pipewire audio support.";
     };
     patchbay = {
-      enable = mkEnableOption "Enable KDE/Gnome calculator apps.";
-      package = mkOpt (types.package) "Package to use as the default patchbay for pipewire.";
+      enable = mkEnableOption "Enable patchbay application for routing pipewire audio.";
+      package = mkOpt types.package "Package to use as the default patchbay for pipewire.";
     };
   };
 
@@ -37,7 +37,7 @@ in
     hardware.pulseaudio.enable = !cfg.pipewire.enable;
     security.rtkit.enable = cfg.pipewire.enable;
     services.pipewire = {
-      enable = cfg.pipewire.enable;
+      inherit (cfg.pipewire) enable;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;

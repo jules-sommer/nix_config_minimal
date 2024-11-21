@@ -19,7 +19,7 @@ in
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-      # rustdesk
+      # rustdesk # seemingly not functional as of 24.11
     ];
 
     services.rustdesk-server = {

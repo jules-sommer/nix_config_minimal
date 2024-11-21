@@ -8,19 +8,18 @@ with lib;
 let
   cfg = config.xeta.development;
 
-  anyLangEnabled = (lib.any lib.isEnabled (lib.attrNames cfg));
-  cliUtilsEnabled = cfg.extras.cli != null && lib.length cfg.extras.cli > 0;
 in
 {
   imports = [
-    ./rust/default.nix
-    ./go/default.nix
-    ./ocaml/default.nix
-    ./typescript/default.nix
-    ./zig/default.nix
-    ./nix/default.nix
-    ./odin/default.nix
-    ./clang/default.nix
+    ./rust
+    ./go
+    ./ocaml
+    ./typescript
+    ./zig
+    ./nix
+    ./odin
+    ./clang
+    ./python
   ];
 
   options.xeta.development = {
@@ -78,7 +77,7 @@ in
     };
   };
 
-  config = mkIf cliUtilsEnabled {
+  config = {
     programs.git = {
       enable = true;
       lfs.enable = true;
@@ -152,7 +151,6 @@ in
       gh
       fastfetch
       blahaj
-      nixd
       nurl
       p7zip
       gitoxide
@@ -174,7 +172,6 @@ in
       jujutsu
       nil
       unzip
-      unzrip
       ripunzip
       ripgrep-all
       zip

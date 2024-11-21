@@ -12,7 +12,6 @@ in
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       pipx
-      pip
       pipenv
       python313Full
     ];

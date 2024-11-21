@@ -48,6 +48,10 @@ in
     ];
 
     boot = lib.mkMerge [
+      {
+        loader.systemd-boot.enable = true;
+        loader.efi.canTouchEfiVariables = true;
+      }
       (mkIf cfg.experimentalRustModuleSupport {
         kernelPatches = [
           {

@@ -15,10 +15,6 @@ in
   };
 
   config = mkIf cfg.enable {
-    assertions = [
-      { assertion = (cfg.package != null) && (builtins.elem (cfg.package) [ pkgs.starship ]); }
-    ];
-
     programs.starship = mkIf (cfg.package == pkgs.starship) {
       enable = true;
       settings =

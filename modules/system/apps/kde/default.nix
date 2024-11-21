@@ -5,19 +5,21 @@
   ...
 }:
 let
-  inherit (lib) mkEnableOpt mkIf mkMerge;
-  cfg = config.xeta.apps.kde;
+  inherit (lib) mkEnableOption mkIf mkMerge;
+  cfg = config.xeta.apps;
 in
 {
-  options.xeta.apps.kde = {
-    kmail = mkEnableOpt "Enable KMail from kdePackages.";
+  options.xeta.apps = {
+    kmail = {
+      enable = mkEnableOption "Enable KMail from kdePackages.";
+    };
   };
 
   config = {
     environment.systemPackages =
       with pkgs.kdePackages;
       (mkMerge [
-        (mkIf (cfg.kmail.enable) [
+        (mkIf cfg.kmail.enable [
           kmail
           kmail-account-wizard
           kmailtransport
