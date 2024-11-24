@@ -34,9 +34,14 @@ in
         shellInit = lib.concatStringsSep "\n" [
           "set fish_greeting ''"
         ];
-        shellAliases = {
-          ls = "eza --icons --hyperlink --color";
-        };
+        shellAliases =
+          {
+            ls = "eza --icons --hyperlink --color";
+          }
+          // (mkIf config.xeta.security.doas.enable {
+            sudo = "doas";
+            sudoedit = "doas rnano";
+          });
         shellAbbrs = {
           lst = "eza --icons=always --hyperlink --color=always --color-scale=all --color-scale-mode=gradient -TL1";
           ff = "fastfetch";

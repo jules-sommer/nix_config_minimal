@@ -26,6 +26,15 @@ in
 
   config = {
     xeta = {
+      security = {
+        gnome-keyring = enabled;
+        doas = enabled;
+        polkit = enabled;
+
+        pam.modules = {
+          oath = enabled;
+        };
+      };
       kernel = {
         enable = true;
         package = pkgs.linuxKernel.kernels.linux_xanmod_latest;
