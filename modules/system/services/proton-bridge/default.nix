@@ -8,7 +8,7 @@ let
   inherit (lib)
     mkEnableOption
     ;
-  cfg = config.xeta.services.hydroxide;
+  cfg = config.xeta.services.proton-bridge;
 in
 {
   options.xeta.services.proton-bridge = {
