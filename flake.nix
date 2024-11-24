@@ -11,7 +11,7 @@
 
     nur.url = "github:nix-community/NUR";
 
-    nixvim-flake.url = "github:jules-sommer/nixvim-flake";
+    nixvim-flake.url = "github:jules-sommer/nixvim_flake";
 
     nix-std = {
       url = "github:chessai/nix-std";

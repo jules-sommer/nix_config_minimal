@@ -1291,16 +1291,17 @@
         "zls": "zls"
       },
       "locked": {
-        "dirtyRev": "425bf30ac51449534f528b23df84abe718af7c0d-dirty",
-        "dirtyShortRev": "425bf30-dirty",
-        "lastModified": 1730135353,
-        "narHash": "sha256-OkHc9navgJt5K/pMHI2+vKdmaPdCp63dK7JPH5SXJ4Q=",
-        "type": "git",
-        "url": "file:///home/jules/000_dev/000_nix/nixvim_flake"
+        "lastModified": 1732225409,
+        "narHash": "sha256-LCG5q056SfP0+AdJupOeMZtKXh9/ARk7wNW9wNTuo18=",
+        "owner": "jules-sommer",
+        "repo": "nixvim_flake",
+        "rev": "82523a6f77edeb2c29a6748b987cdccb46f86b34",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/jules/000_dev/000_nix/nixvim_flake"
+        "owner": "jules-sommer",
+        "repo": "nixvim_flake",
+        "type": "github"
       }
     },
     "nur": {
