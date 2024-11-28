@@ -30,6 +30,7 @@ in
         gnome-keyring = enabled;
         doas = enabled;
         polkit = enabled;
+        keepassxc = enabled;
 
         pam.modules = {
           oath = enabled;
@@ -46,9 +47,11 @@ in
         tcp_bbr = enabled;
       };
       theming.stylix = enabled;
+      masterpdf = enabled;
       apps = {
         kmail = enabled;
         okular = enabled;
+        masterpdf = enabled;
         libreoffice = enabled;
         calculator = enabled;
       };
@@ -166,6 +169,7 @@ in
         EDITOR = "nvim";
         NIX_BUILD_CORES = 8;
         GC_INITIAL_HEAP_SIZE = "8G";
+        MANPAGER = "nvim +Man!";
       };
 
       systemPackages = with pkgs; [

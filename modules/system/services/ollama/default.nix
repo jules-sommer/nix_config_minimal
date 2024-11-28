@@ -7,9 +7,7 @@
 let
   inherit (lib)
     mkIf
-    mkOpt
     mkEnableOption
-    types
     ;
   cfg = config.xeta.services.ollama;
 in
@@ -25,7 +23,7 @@ in
     ];
 
     services.ollama = {
-      enable = cfg.enable;
+      inherit (cfg) enable;
       acceleration = "rocm";
     };
   };

@@ -1,21 +1,10 @@
-{
-  lib,
-  config,
-  ...
-}:
+{ config, lib, ... }:
+with lib;
 let
-  inherit (lib) mkEnableOption;
   cfg = config.xeta.security;
+
 in
 {
-  imports = [
-    ./ssh/default.nix
-    ./rustdesk/default.nix
-    ./ollama/default.nix
-    ./hydroxide/default.nix
-    ./proton-bridge/default.nix
-  ];
-
   options.xeta.security = {
     gnome-keyring = {
       enable = mkEnableOption "Enable gnome-keyring flake module.";
@@ -26,7 +15,9 @@ in
     polkit = {
       enable = mkEnableOption "Enable polkit.";
     };
-
+    keepassxc = {
+      enable = mkEnableOption "Enable keepassxc password manager and associated packages/modules.";
+    };
     pam = {
       modules = {
         oath = {
@@ -38,6 +29,25 @@ in
 
   config = {
     services.gnome.gnome-keyring.enable = cfg.gnome-keyring.enable;
+
+    environment.systemPackages =
+      with pkgs;
+      mkIf cfg.keepassxc [
+        git-credential-keepassxc
+        keeweb
+        kpcli
+        keepmenu
+        keepass-keeagent
+        keepass-qrcodeview
+        keepass-otpkeyprov
+        keepass-keetraytotp
+        keepass-keepassrpc
+        keepass-charactercopy
+        keepass-keepasshttp
+        keepassxc
+        keepassxc-go
+        keepass-diff
+      ];
 
     security = {
       polkit = {
