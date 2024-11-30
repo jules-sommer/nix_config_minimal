@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 with lib;
 let
   cfg = config.xeta.security;
@@ -32,7 +37,7 @@ in
 
     environment.systemPackages =
       with pkgs;
-      mkIf cfg.keepassxc [
+      mkIf cfg.keepassxc.enable [
         git-credential-keepassxc
         keeweb
         kpcli

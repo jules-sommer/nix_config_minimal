@@ -19,6 +19,7 @@ in
     ./networking
     ./theming
     ./services
+    ./security
     ./fonts
     ./desktop
     ./terminal
@@ -27,7 +28,7 @@ in
   config = {
     xeta = {
       security = {
-        gnome-keyring = enabled;
+        gnome-keyring = disabled;
         doas = enabled;
         polkit = enabled;
         keepassxc = enabled;
@@ -47,7 +48,6 @@ in
         tcp_bbr = enabled;
       };
       theming.stylix = enabled;
-      masterpdf = enabled;
       apps = {
         kmail = enabled;
         okular = enabled;
@@ -66,6 +66,11 @@ in
         hydroxide = disabled;
         ollama = disabled;
         rustdesk = disabled;
+        hidden = {
+          tor = enabled;
+          i2p = enabled;
+          i2pd = enabled;
+        };
       };
       desktop = {
         hyprland = {

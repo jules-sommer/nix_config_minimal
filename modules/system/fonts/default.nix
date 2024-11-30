@@ -14,9 +14,9 @@ let
   cfg = config.xeta.fonts;
 in
 {
-  options.xeta.fonts = {
+  options.xeta.fonts = with types; {
     enable = lib.mkEnableOption "Enable system fonts";
-    nerdfonts = mkOpt (types.listOf types.string) [ ] "Additional NerdFonts to install";
+    nerdfonts = mkOpt (listOf str) [ ] "Additional NerdFonts to install";
   };
 
   config = mkIf cfg.enable {
