@@ -1,13 +1,16 @@
 {
   inputs = {
     master.url = "github:nixos/nixpkgs/master";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    unfree.url = "github:numtide/nixpkgs-unfree";
     home-manager = {
       url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "unstable";
     };
 
     base24-themes.url = "github:jules-sommer/nix_b24_themes";
+
+    flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus";
 
     nur.url = "github:nix-community/NUR";
 
@@ -25,7 +28,7 @@
 
     oxalica = {
       url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "unstable";
     };
 
     zls.url = "github:zigtools/zls";
@@ -35,7 +38,7 @@
 
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "unstable";
     };
 
   };
@@ -44,9 +47,9 @@
       self,
       stylix,
       master,
-      nixpkgs,
       base24-themes,
       home-manager,
+      flake-utils-plus,
       zen-browser,
       zig-overlay,
       zls,
@@ -57,131 +60,134 @@
       ...
     }@inputs:
     let
-      channels =
-        let
-          mkChannel =
-            input:
-            import input {
-              inherit (flake) overlays system;
-              config.allowUnfree = true;
-            };
-        in
-        rec {
-          master = import master {
-            inherit (flake) overlays system;
-            config.allowUnfree = true;
-          };
-          unstable = import nixpkgs {
-            inherit (flake) overlays system;
-            config.allowUnfree = true;
-          };
-          nur = import nur { nurpkgs = import nixpkgs { inherit (flake) system; }; };
-        };
+      inherit (builtins) mapAttrs hasAttr;
+      inherit (defaultChannel.lib) filterAttrs;
+      channels = mapAttrs (k: mkChannel) (
+        filterAttrs (k: v: hasAttr "legacyPackages" v && hasAttr "lib" v) inputs
+      );
 
-      mkLib = nixpkgs: nixpkgs.lib.extend (_: _: flake.lib // home-manager.lib);
+      inherit (flake-utils-plus.lib) exportPackages exportOverlays mkFlake;
 
-      flake = rec {
-        system = "x86_64-linux";
-        localSystem = {
-          inherit system;
-          gcc.arch = "znver4";
-          gcc.tune = "znver4";
-        };
-        lib = import ./lib/default.nix {
-          inherit inputs;
-          inherit (nixpkgs) lib;
-        };
-        options = {
-          compileZigFromSrc = false;
-        };
-        overlays = [
-          zig-overlay.overlays.default
-          neovim-nightly-overlay.overlays.default
-          oxalica.overlays.default
-          nur.overlay
-          (_: prev: {
-            inherit (zls.outputs.packages.${prev.system}) zls;
-            zen-browser = zen-browser.packages.${prev.system}.specific;
-            zig = zig-overlay.packages.${prev.system}.master;
-            nixvim = nixvim-flake.packages.${prev.system}.default;
-          })
-        ];
-        packages = import ./packages/default.nix { inherit (nix) pkgs; };
+      mkChannel = channel: {
+        pkgs = channel.legacyPackages;
+        lib = channel.lib.extend (
+          final: prev:
+          import ./lib {
+            inherit (channel) lib;
+            inherit inputs;
+          }
+          // home-manager.lib
+          // inputs.flake-utils-plus.lib
+        );
       };
+
+      getChannelPkgs = system: channel: channel.pkgs.${system};
+      getChannelLib = channel: channel.lib;
+
+      channelName = "unstable";
+      defaultChannel = mkChannel inputs.unstable;
+
+      # mkLib = nixpkgs: nixpkgs.lib.extend (_: _: flake.lib // home-manager.lib);
 
       theme = base24-themes.themes.tokyo_night_dark;
-
-      nix = rec {
-        pkgs = channels.unstable // flake.packages;
-        inherit (pkgs) lib;
-        inherit (flake) channels-config;
-      };
-      lib = mkLib nix.pkgs;
     in
-    assert lib.assertMsg (
-      builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? mkOpt
-    ) "failed to build flake library correctly.";
-    {
-      inherit lib channels theme;
+    mkFlake {
+      inherit self inputs;
 
-      nixosConfigurations.xeta = nixpkgs.lib.nixosSystem {
-        inherit (flake) system;
-        inherit (nix) pkgs;
-        specialArgs = {
+      channelsConfig = {
+        allowBroken = true;
+      };
+
+      sharedOverlays = [
+        zig-overlay.overlays.default
+        neovim-nightly-overlay.overlays.default
+        oxalica.overlays.default
+        nur.overlays.default
+        self.overlay
+        (final: prev: {
+          inherit (defaultChannel) lib;
+        })
+        (_: prev: {
+          inherit (zls.outputs.packages.${prev.system}) zls;
+          zig = zig-overlay.packages.${prev.system}.master;
+          nixvim = nixvim-flake.packages.${prev.system}.default;
+        })
+      ];
+
+      hostDefaults = {
+        system = "x86_64-linux";
+        inherit channelName;
+        extraArgs = {
           inherit
             inputs
-            lib
             theme
             channels
             ;
-          inherit (flake) system;
+          inherit (defaultChannel) lib;
         };
         modules = [
-          inputs.base16.nixosModule
-          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
-          ## Primary system module @ ./modules/system/default.nix
           ./modules/system
           {
-            boot.tmp.useTmpfs = true;
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
               backupFileExtension = "hm-bak";
+              users.jules = import ./modules/home;
             };
           }
         ];
       };
 
-      homeConfigurations = {
-        xeta = lib.homeManagerConfiguration {
-          inherit (nix) pkgs;
-          extraSpecialArgs = {
-            inherit
-              inputs
-              lib
-              theme
-              channels
-              ;
-            inherit (flake) system;
-            inherit (nix) pkgs;
-          };
+      hosts = {
+        xeta = {
           modules = [
-            ## Primary home-manager module @ ./modules/home/default.nix
-            ./modules/home
-            stylix.homeManagerModules.stylix
-            {
-              home = {
-                packages = [
-                  nix.pkgs.home-manager
-                  nixvim-flake.packages.${flake.system}.default
-                  zig-overlay.packages.${flake.system}.master
-                ];
-                stateVersion = "24.05";
-              };
-            }
+            ./hosts/xeta
+            inputs.base16.nixosModule
+            stylix.nixosModules.stylix
+          ];
+        };
+        progesterone = {
+          system = "aarch64-linux";
+          modules = [
+            ./hosts/progesterone
           ];
         };
       };
+
+      overlay = import ./overlays;
+
+      outputsBuilder =
+        channels:
+        let
+          pkgs = channels.${channelName};
+          inherit (channels.${channelName}) lib;
+        in
+        {
+          # Evaluates to `apps.<system>.custom-neovim  = utils.lib.mkApp { drv = ...; exePath = ...; };`.
+          channelsFup = channels;
+
+          overlays = exportOverlays {
+            inherit (self) pkgs inputs;
+          };
+          packages = exportPackages self.overlays.${"x86_64-linux"} channels;
+
+          # Evaluates to `packages.<system>.package-from-overlays = <unstable-nixpkgs-reference>.package-from-overlays`.
+          # packages = lib.mergeAttrs (import ./packages {
+          #   inherit (channels.${channelName}) lib;
+          #   pkgs = channels.${channelName};
+          # }) inputs.nixvim-flake.outputs.packages;
+        };
+    }
+    // {
+      inherit channels theme defaultChannel;
+      inherit (inputs) nixvim-flake;
+      # packages =
+      #   system:
+      #   (import ./packages/default.nix {
+      #     inherit (defaultChannel) lib;
+      #     inherit system;
+      #     pkgs = getChannelPkgs system defaultChannel;
+      #   });
     };
 }
