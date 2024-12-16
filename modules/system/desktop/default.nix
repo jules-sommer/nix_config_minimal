@@ -1,7 +1,7 @@
 { lib, config, ... }:
 let
-  inherit (lib) mkEnableOption;
-  cfg = config.xeta.desktop.xserver;
+  inherit (lib) mkIf mkEnableOption mkDefault;
+  cfg = config.xeta.desktop;
 in
 {
   imports = [
@@ -10,20 +10,24 @@ in
     ./river
   ];
 
-  options.xeta.desktop.xserver = {
-    enable = mkEnableOption "Enable xserver.";
+  options.xeta.desktop = {
+    xserver = {
+      enable = mkEnableOption "Enable xserver.";
+    };
+    qt = {
+      enable = mkEnableOption "Enable qt configuration.";
+    };
   };
 
   config = {
-    # enable xserver for any desktop env that needs it
-    qt = {
-      enable = true;
+    qt = mkIf cfg.qt.enable {
+      inherit (cfg.qt) enable;
       style = "breeze";
       platformTheme = "kde";
     };
     services = {
-      xserver = {
-        inherit (cfg) enable;
+      xserver = mkIf cfg.xserver.enable (mkDefault {
+        inherit (cfg.xserver) enable;
         autoRepeatDelay = 200;
         autoRepeatInterval = 30;
         autorun = true;
@@ -31,7 +35,7 @@ in
           layout = "us";
           options = "eurosign:e,caps:escape";
         };
-      };
+      });
     };
   };
 }

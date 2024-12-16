@@ -23,63 +23,9 @@ in
       }
     ];
 
-    xeta = {
-      terminal = {
-        enable = true;
-        emulator = {
-          kitty = enabled;
-          alacritty = enabled;
-        };
-        prompt = mkEnabledPkg pkgs.starship;
-        shell = {
-          enable = true;
-          package = pkgs.nushell;
-          settings = {
-            zoxide = mkEnabledPkg pkgs.zoxide;
-            carapace = mkEnabledPkg pkgs.carapace;
-          };
-        };
-      };
-      desktop = {
-        hyprland = disabled;
-        plasma6 = enabled;
-        river = disabled;
-      };
-    };
-
     xdg = {
       inherit (homeDirs) configHome;
     };
-
-    home.packages = with pkgs; [
-      obsidian
-      obsidian-export
-      vencord
-      vesktop
-      dorion
-      signalbackup-tools
-      signal-cli
-      signal-desktop-beta
-      cordless
-      inkscape-with-extensions
-      chromium
-      libgen-cli
-      (nerdfonts.override {
-        fonts = [
-          "JetBrainsMono"
-          "Noto"
-          "RobotoMono"
-          "ZedMono"
-          "Ubuntu"
-          "UbuntuMono"
-          "NerdFontsSymbolsOnly"
-          "SpaceMono"
-          "UbuntuSans"
-          "Hack"
-          "FiraCode"
-        ];
-      })
-    ];
 
     programs = {
       ripgrep = enabled;
@@ -106,12 +52,6 @@ in
         enableBashIntegration = true;
         enableFishIntegration = true;
       };
-    };
-
-    home = {
-      username = "jules";
-      homeDirectory = homeDirs.home;
-      stateVersion = "24.05";
     };
   };
 }

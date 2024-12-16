@@ -1,10 +1,15 @@
-{ lib, inputs, ... }:
+{ lib, ... }:
 let
-  inherit (lib) types;
+  inherit (lib)
+    types
+    attrsToList
+    filter
+    length
+    head
+    ;
 in
 rec {
 
-  mkLib = { nixpkgs, rest }: nixpkgs.lib.extend (_: _: rest);
   ###
   ### getPackage input: system:
   ### Takes an input that has a 'packages' attribute and with the provided system, returns
@@ -46,21 +51,20 @@ rec {
     package = pkg;
   };
 
-  getHomeDirs = username: rec {
-    home = "/home/${username}";
-    configHome = "${home}/.config";
-  };
-
-  ### Namespaced lib functions
-  xeta = {
-    systems = rec {
-      supported = {
-        x86_64-linux = "x86_64-linux";
-        aarch64-linux = "aarch64-linux";
-      };
-      getNamesList = builtins.attrNames supported;
-    };
-  };
+  getPrimaryUser =
+    users:
+    let
+      primaryUsers = filter (user: user.value.primary or false) (attrsToList users);
+    in
+    if length primaryUsers == 0 then
+      throw "No primary user found"
+    else if length primaryUsers > 1 then
+      throw "Multiple primary users found"
+    else
+      let
+        user = head primaryUsers;
+      in
+      user.value // { name = user.name; };
 
   mkEnableOpt = description: { enable = lib.mkEnableOption description; };
 

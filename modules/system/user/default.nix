@@ -82,7 +82,6 @@
         "fuse"
       ];
       packages = with pkgs; [
-        zen-browser
         floorp
         vencord
         webcord

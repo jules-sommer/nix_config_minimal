@@ -81,21 +81,6 @@ in
         # noto-fonts-cjk-sans
         # noto-fonts-cjk-serif
         noto-fonts-emoji
-        (nerdfonts.override {
-          fonts = [
-            "JetBrainsMono"
-            "Noto"
-            # "RobotoMono"
-            # "ZedMono"
-            # "Ubuntu"
-            "UbuntuMono"
-            "NerdFontsSymbolsOnly"
-            # "SpaceMono"
-            "UbuntuSans"
-            "Hack"
-            "FiraCode"
-          ] ++ cfg.nerdfonts;
-        })
       ];
     };
   };
