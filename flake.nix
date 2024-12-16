@@ -26,7 +26,7 @@
 
     zen-browser.url = "github:MarceColl/zen-browser-flake";
 
-    channels.url = "path:/home/jules/000_dev/000_nix/channels";
+    channels.url = "github:jules-sommer/nix-channels-flake";
 
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
